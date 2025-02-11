@@ -11,7 +11,6 @@ const sendMessage = async () => {
 
     if (enunciado.trim() !== '') {
         messagesContainer.innerHTML += `<div class="user-message">${enunciado}</div>`;
-
         try {
             const response = await fetch('/chat', {
                 method: 'POST',
@@ -20,15 +19,12 @@ const sendMessage = async () => {
                 },
                 body: JSON.stringify({ message: enunciado })
             });
-
             if (!response.ok) {
                 throw new Error(`Erro na requisição HTTP! Status: ${response.status}`);
             }
-
             const data = await response.json();
             resposta = data.resposta;
             console.log(`Recebido do chatbot: ${resposta}`);
-
             messagesContainer.innerHTML += `<div class="bot-message">${resposta}</div>`;
         } catch (error) {
             console.error("Erro ao enviar mensagem:", error);
@@ -52,7 +48,6 @@ const saveConversation = async () => {
                 },
                 body: JSON.stringify({ enunciado, resposta })
             });
-
             if (response.ok) {
                 console.log("Conversa salva com sucesso.");
             } else {
