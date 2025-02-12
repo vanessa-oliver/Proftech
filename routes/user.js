@@ -13,10 +13,11 @@ router.get('/listuser', function(req, res) {
 });
 
 // Rota para deletar um usuário
-router.get('/del/:cod_usuario', function(req, res) {
+router.get('/del/:cod_usuario', (req, res) =>{
     Usuario.destroy({ where: {'cod_usuario': req.params.cod_usuario} })
     .then(function() {
-        res.redirect('Admin/index');
+        // console.log("Usuário deletado com sucesso.");
+        res.redirect('User/user');
     }).catch(function(erro) {
         res.send("Erro ao deletar usuário: " + erro);
     });
