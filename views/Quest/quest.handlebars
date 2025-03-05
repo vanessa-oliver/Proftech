@@ -1,6 +1,6 @@
 <h1 class="title">Questão</h1>
 <p><b>Enunciado:</b> {{questao.enunciado}}</p>
 <p><b>Resposta:</b> {{questao.resposta}}</p>
-<a href="/listquest"><button>Voltar à lista</button></a>
-<a href='/delquest/{{questao.cod_questao}}'><button>deletar</button></a>
-<a href='/edit/{{questao.cod_questao}}'><button>editar</button></a>
+<a href="/quest/listquest"><button class="btn btn-success"> Voltar à lista</button></a>
+<a href='/quest/delquest/{{questao.cod_questao}}'><button class="btn btn-success" >deletar</button></a>
+<a href='/quest/updatequest/{{questao.cod_questao}}'><button class="btn btn-success">editar</button></a>

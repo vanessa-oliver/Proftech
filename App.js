@@ -5,14 +5,35 @@ const exphbs = require('express-handlebars');
 const path = require('path');
 const bodyParser = require('body-parser');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
+const session = require('express-session');
+const flash = require('connect-flash');
+
 // Configurando dotenv para variáveis de ambiente
 require('dotenv').config();
 const port = process.env.PORT || 3000;
 const apiKey = process.env.KEY_GEMINI;
+
 // Criando API do Google
 const genAI = new GoogleGenerativeAI(apiKey);
 
-// Configurando Template Engine
+// Configurando sessão
+app.use(session({
+    secret: "projetoproftechpi",
+    resave: true,
+    saveUninitialized: true
+}))
+
+// Configurando Flash
+app.use(flash());
+
+// Middleware
+app.use((req, res, next) => {
+    res.locals.success_msg = req.flash("success_msg");
+    res.locals.error_msg = req.flash("error_msg");
+    next();
+});
+
+// Configurando Template Enginegurando sessao
 app.engine('handlebars', exphbs.engine({ defaultLayout: 'main' }));
 app.set('view engine', 'handlebars');
 

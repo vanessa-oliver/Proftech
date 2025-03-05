@@ -1,10 +1,10 @@
 <h1>Questões</h1>
 {{#each questoes}}
-    <a href="/readquest/{{this.dataValues.cod_questao}}">
+    <a href="/quest/readquest/{{this.dataValues.cod_questao}}">
     <div>
         <p><b>{{this.dataValues.enunciado}}</b></p>
     </div>
     </a>
 {{/each}}
-<a href="/createquest"><button>criar questão</button></a>
-<a href="/chat"><button>criar questão com IA</button></a>
+<a href="/quest/createquest"><button class="btn btn-success"></button>criar questão</button></a>
+<a href="/IA/chat"><button class="btn btn-success">criar questão com IA</button></a>

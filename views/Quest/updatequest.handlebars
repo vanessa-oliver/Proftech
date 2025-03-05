@@ -1,0 +1,26 @@
+{{#each erros}}
+    <div class="alert alert-danger" role="alert">
+        {{texto}}
+    </div>
+{{/each}}
+<h1>edite sua questão</h1>
+<div class="card">
+    <div class="card-body">
+        <form action="/quest/updatequest" method="post">
+            <input type="hidden" id="cod_questao" name="cod_questao" value="{{questao.cod_questao}}">
+            <label>enunciado</label>
+            <input type="text" id="enunciado" name="enunciado" placeholder="enunciado" value="{{questao.enunciado}}">
+            <br>
+            <label>resposta</label>
+            <input type="text" id="resposta" name="resposta" placeholder="resposta" value="{{questao.resposta}}">
+            <br>
+            <label>codigo do usuario</label>    
+            <input type="text" id="cod_usuario" name="cod_usuario" placeholder="codigo do usuario" value="{{questao.cod_usuario}}">
+            <br>
+            <label>codigo do assunto</label>
+            <input type="text" id="cod_assunto" name="cod_assunto" placeholder="codigo do assunto" value="{{questao.cod_assunto}}">
+            <br>
+            <button type="submit" class="btn btn-success">Editar</button >
+        </form>
+    </div>
+</div>

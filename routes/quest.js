@@ -2,12 +2,12 @@ const express = require('express');
 const router = express.Router(); const Questao = require('../models/Questao');
 
 // Rota para exibir questão
-router.get('readquest/:cod_questao', async (req, res) =>{
+router.get('/readquest/:cod_questao', async (req, res) =>{
     try {
         const cod_questao = req.params.cod_questao;
-        console.log(`Buscando questão com código: ${cod_questao}`);
+        // console.log(`Buscando questão com código: ${cod_questao}`);
         const questao = await Questao.findByPk(cod_questao);
-        console.log(`Questão encontrada: ${questao}`);
+        // console.log(`Questão encontrada: ${questao}`);
         if (!questao) {
             res.status(404).send("Questão não encontrada!");
             return;
@@ -33,7 +33,7 @@ router.get('/listquest', function(req, res) {
 router.get('/delquest/:cod_questao', function(req, res) {
     Questao.destroy({ where: {'cod_questao': req.params.cod_questao} })
     .then(function() {
-        res.redirect('Quest/listquest');
+        res.redirect('/quest/listquest');
     }).catch(function(erro) {
         res.send("Erro ao deletar questão: " + erro);
     });
@@ -46,17 +46,64 @@ router.get('/createquest', function(req, res) {
 
 // Rota para adicionar questão 
 router.post('/addquest', function(req, res) {
-    Questao.create({
-        enunciado: req.body.enunciado,
-        resposta: req.body.resposta,
-        cod_usuario: req.body.cod_usuario,
-        cod_assunto: req.body.cod_assunto
-    }).then(function() {
-        res.redirect('Quest/listquest');
-    }).catch(function(erro) {
-        res.send("Erro ao cadastrar questão: " + erro);
-    });
+    var erros = [];
+
+    if(!req.body.enunciado || !req.body.resposta || !req.body.cod_usuario || !req.body.cod_assunto) {
+        erros.push({texto: "Preencha todos os campos!"});
+    }
+    if(req.body.enunciado == null || req.body.resposta == null || req.body.cod_usuario == null || req.body.cod_assunto == null) {
+        erros.push({texto: "Preencha todos os campos!"});
+    }
+    if(typeof req.body.enunciado == 'undefined' || typeof req.body.resposta == 'undefined' || typeof req.body.cod_usuario == 'undefined' || typeof req.body.cod_assunto == 'undefined') {
+        erros.push({texto: "Preencha todos os campos!"});
+    }
+    if(erros.length > 0){
+        res.render('Quest/addquest', {erros: erros});
+    }
+    else{
+        Questao.create({
+            enunciado: req.body.enunciado,
+            resposta: req.body.resposta,
+            cod_usuario: req.body.cod_usuario,
+            cod_assunto: req.body.cod_assunto
+        }).then(function() {
+            req.flash("success_msg", "Questão cadastrada com sucesso!");
+            res.redirect('/quest/listquest');
+        }).catch(function(erro) {
+            req.flash("error_msg", "Erro ao cadastrar questão: " + erro);
+            res.send("Erro ao cadastrar questão: " + erro);
+        });
+    }
 });
 
+router.get('/updatequest/:cod_questao', function(req, res) {
+    Questao.findOne({ where: {"cod_questao":req.params.cod_questao} })
+    .then(function(questao) {
+        res.render('Quest/updatequest', {questao: questao});
+    }).catch(function(erro) {
+        req.flash("error_msg", "Erro ao buscar questão: " + erro);
+        res.redirect('/quest/listquest');
+    }
+)});
+
+router.post('/updatequest', function(req, res) {
+    Questao.findOne({ where: {"cod_questao": req.body.cod_questao} })
+    .then(function(questao) {
+        questao.enunciado = req.body.enunciado;
+        questao.resposta = req.body.resposta;
+        questao.cod_usuario = req.body.cod_usuario;
+        questao.cod_assunto = req.body.cod_assunto;
+        Questao.save().then(function() {
+            req.flash("success_msg", "Questão atualizada com sucesso!");
+            res.redirect('/quest/listquest');
+        }).catch(function(erro) {
+            req.flash("error_msg", "Erro ao atualizar questão: " + erro);
+            res.redirect('/quest/listquest');
+        });
+    }).catch(function(erro) {
+        req.flash("error_msg", "Erro ao buscar questão: " + erro);
+        res.redirect('/quest/listquest');
+    });
+});
 
 module.exports = router;
