@@ -40,6 +40,5 @@ const Questao = sq.sequelize.define('Questao', {
 
 });
 
-
 model: Usuario, Assunto;
 module.exports = Questao;

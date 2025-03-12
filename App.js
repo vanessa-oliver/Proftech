@@ -4,17 +4,14 @@ const app = express();
 const exphbs = require('express-handlebars');
 const path = require('path');
 const bodyParser = require('body-parser');
-const { GoogleGenerativeAI } = require('@google/generative-ai');
 const session = require('express-session');
 const flash = require('connect-flash');
+const passport = require('passport');
+require('./config/auth')(passport);
 
 // Configurando dotenv para variáveis de ambiente
 require('dotenv').config();
-const port = process.env.PORT || 3000;
-const apiKey = process.env.KEY_GEMINI;
-
-// Criando API do Google
-const genAI = new GoogleGenerativeAI(apiKey);
+const port = process.env.PORT
 
 // Configurando sessão
 app.use(session({
@@ -22,6 +19,10 @@ app.use(session({
     resave: true,
     saveUninitialized: true
 }))
+
+// Configurando Passport
+app.use(passport.initialize());
+app.use(passport.session());
 
 // Configurando Flash
 app.use(flash());
@@ -44,7 +45,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Configurando Body Parser
-app.use(bodyParser.urlencoded({ extended: true}));
+app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 
 // Importando rotas

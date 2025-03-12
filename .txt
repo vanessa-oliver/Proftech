@@ -1,41 +1,6 @@
-body {
-    font-family: sans-serif;
-    background-color: rgb(10, 0, 77);
-}
-h1{
-    color:white;
-    text-align: center;
-}
-#chat-container {
-    width: 900px;
-    margin: 0 auto;
-}
-#input-container{
-    padding-top: 12px;
-}
-#messages {
-    background-color: #00001b;
-    border-radius: 8px;
-    padding: 10px;
-    height: 500px;
-}
-.user-message {
-    color: #51c5f0;
-    padding: 15px;
-}
-.bot-message {
-    color: rgb(255, 255, 255);
-    text-align: right;
-    padding: 15px;
-}
-#user-input, #send-button{
-    border-radius: 8px;
-    border: none;
-    color:#ffffff;
-    background-color: #00001b;
-    font-size:15px;
-    height: 35px;
-}
-#user-input{
-    width: 830px;   
-}
+DB_NAME=
+DB_USER=
+DB_PASSWORD=
+DB_HOST=
+KEY_GEMINI = ''
+PORT=3000

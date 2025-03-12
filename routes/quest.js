@@ -33,8 +33,10 @@ router.get('/listquest', function(req, res) {
 router.get('/delquest/:cod_questao', function(req, res) {
     Questao.destroy({ where: {'cod_questao': req.params.cod_questao} })
     .then(function() {
+        req.flash("success_msg", "Questão deletada com sucesso!");
         res.redirect('/quest/listquest');
     }).catch(function(erro) {
+        req.flash("error_msg", "Erro ao deletar questão: " + erro);
         res.send("Erro ao deletar questão: " + erro);
     });
 });

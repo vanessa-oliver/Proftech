@@ -16,6 +16,11 @@ const Usuario = sq.sequelize.define('usuario', {
         allowNull: false, 
         unique: true 
     }, 
+    eAdmin: {
+        type: DataTypes.INTEGER, 
+        allowNull: false, 
+        defaultValue: 0
+    },
     password: { 
         type: DataTypes.STRING, 
         allowNull: false
