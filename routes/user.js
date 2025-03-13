@@ -42,6 +42,7 @@ router.post('/cadastro', function(req, res) {
                 const novoUsuario = {
                     nome: req.body.nome,
                     email: req.body.email,
+                    eAdmin: false,
                     password: req.body.password
                 };
 
@@ -109,6 +110,36 @@ router.get('/del/:cod_usuario', (req, res) =>{
     }).catch(function(erro) {
         res.send("Erro ao deletar usuário: " + erro);
     });
+});
+
+router.get('/updateuser/:cod_usuario', async(req, res)=> {
+    try{
+        const cod_usuario = req.params.cod_usuario;
+        usuario = await Usuario.findByPk(cod_usuario);
+        if(usuario){
+            res.render('updateuser', { usuario: usuario.dataValues });
+        }else{
+            console.log('usuario não encontrado')
+        }
+    }catch{
+        console.log('usuario não encontrado')
+    }
+});
+
+router.post('/updateuser/:cod_usuario', async (req, res) => {
+    console.log('entrou no atualizar')
+    const { nome, email, password } = req.body;
+    const { cod_usuario } = req.params;
+    
+    try {
+        await Usuario.update(
+            { nome, email, password }, 
+            { where: { cod_usuario: req.params.cod_usuario } }
+        );
+        res.redirect('/listuser');
+    } catch (error) {
+        res.status(500).send('erro ao atualizar usuario');
+    }
 });
 
 module.exports = router;

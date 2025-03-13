@@ -88,6 +88,37 @@ router.get('/updatequest/:cod_questao', function(req, res) {
     }
 )});
 
+router.get('/updatequest/:cod_questao', async(req, res)=> {
+    try{
+        const cod_questao = req.params.cod_questao;
+        questao = await Questao.findByPk(cod_questao);
+        if(questao){
+            res.render('updatequest', { questao: questao.dataValues });
+        }else{
+            console.log('questao não encontrado')
+        }
+    }catch{
+        console.log('questao não encontrado')
+    }
+    
+});
+
+router.post('/updatequest/:cod_questao', async (req, res) => {
+    console.log('entrou no atualizar quest')
+    const { enunciado, resposta_esperada, cod_usuario, cod_assunto } = req.body;
+    const { cod_questao } = req.params;
+    
+    try {
+        await Questao.update(
+            { enunciado, resposta_esperada, cod_usuario, cod_assunto }, 
+            { where: { cod_questao: req.params.cod_questao } }
+        );
+        res.redirect('/listquest');
+    } catch (error) {
+        res.status(500).send('erro ao atualizar questao');
+    }
+});
+
 router.post('/updatequest', function(req, res) {
     Questao.findOne({ where: {"cod_questao": req.body.cod_questao} })
     .then(function(questao) {

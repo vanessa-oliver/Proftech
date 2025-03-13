@@ -49,16 +49,22 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 
 // Importando rotas
+const adminRoutes = require('./routes/admin');
+const examRoutes = require('./routes/exam');
 const userRoutes = require('./routes/user');
 const questRoutes = require('./routes/quest');
 const IARoutes = require('./routes/IA');
-const adminRoutes = require('./routes/admin');
+const subjectRoutes = require('./routes/subject');
+//const headersRoutes = require('./routes/headers');
 
 // Configurando rotas
 app.use('/user', userRoutes);
 app.use('/quest', questRoutes);
 app.use('/IA', IARoutes);
 app.use('/admin', adminRoutes);
+app.use('/exam', examRoutes);
+app.use('/subject', subjectRoutes);
+//app.use('/headers', headersRoutes);
 
 // Servidor
 app.listen(port, function() {

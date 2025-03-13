@@ -3,7 +3,6 @@ const Assunto = require('./Assunto');
 const { Sequelize, DataTypes } = require('sequelize');
 const sq = require('../config/database.js');
 
-
 const Questao = sq.sequelize.define('Questao', { 
     cod_questao: {
         type: DataTypes.INTEGER, 

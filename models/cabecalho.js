@@ -1,5 +1,6 @@
 const { Sequelize, DataTypes } = require('sequelize');
 const sq = require('../config/database.js');
+const Prova = require('./Prova.js');
 
 const cabecalho = sq.sequelize.define('cabecalho', {    
     cod_cabecalho: {

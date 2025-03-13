@@ -1,5 +1,6 @@
 const { Sequelize, DataTypes } = require('sequelize');
 const sq = require('../config/database.js');
+const Assunto = require('./Assunto.js');
 
 const Prova = sq.sequelize.define('Prova', { 
     cod_prova: { 

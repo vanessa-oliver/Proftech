@@ -3,12 +3,18 @@ const bcrypt = require('bcryptjs');
 const Usuario = require('../models/Usuario');
 
 module.exports = function(passport) {
+
     passport.use(new LocalStrategy({
         usernameField: 'email',
         passwordField: 'senha', 
+
     }, async (email, senha, done) => {
         try {
+            console.log(email);
+            console.log(senha);
+
             const usuario = await Usuario.findOne({ where: { email: email } });
+            console.log(usuario);
     
             if (!usuario) {
                 console.log('Usuário não encontrado.');

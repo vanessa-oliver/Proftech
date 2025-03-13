@@ -1,6 +1,6 @@
 const { Sequelize, DataTypes } = require('sequelize');
 const sq = require('../config/database.js');
-const Disciplina = require('./Disciplina');
+const Disciplina = require('./Disciplina.js');
 
 const Assunto = sq.sequelize.define('Assunto', {
     cod_assunto: {
