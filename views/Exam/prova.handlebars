@@ -1,17 +1,57 @@
-<h1>atualizar prova {{prova.nome_prova}}</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.2/html2pdf.bundle.min.js" integrity="sha512-MpDFIChbcXl2QgipQrt1VcPHMldRILetapBl5MPCA9Y8r7qvlwx1/Mc9hNTzY+kS5kX6PdoDq41ws1HiVNLdZA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</head>
+<body>
+    <button id="generate-pdf">gerar pdf</button>
+    <div id="content">
+        <h1>PROVA de {{prova.nome_prova}}</h1>
+        <p>DATA: {{prova.data}}</p>
 
-<form action="/exam/atualizarprova/{{prova.cod_prova}}" method="post">
-    <label>nome prova</label>
-    <input type="text" id="nome_prova" name="nome_prova" placeholder="nome_prova">
-    <br>
-    <label>data</label>
-    <input type="date" id="data" name="data" placeholder="data">
-    <br>
-    <label>codigo do usuario</label>    
-    <input type="text" id="cod_usuario" name="cod_usuario" placeholder="codigo do usuario">
-    <br>
-    <label>codigo do assunto</label>
-    <input type="text" id="cod_assunto" name="cod_assunto" placeholder="codigo do assunto">
-    <br>
-    <button type="submit">Criar</button>
-</form>   
+        <a href="/exam/adicionar_questao/{{prova.cod_prova}}" id="adicionar_questao">
+            <button>adicionar questão</button>
+        </a>
+
+        <ol>
+            {{#each questoes}}
+                <li>
+                    <p>{{this.enunciado}}</p>
+                    <form action="/exam/remover_questao" method="POST">
+                        <input type="hidden" name="cod_prova" value="{{../prova.cod_prova}}">
+                        <input type="hidden" name="cod_questao" value="{{this.cod_questao}}">
+                        <button type="submit">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3-fill" viewBox="0 0 16 16">
+                                <path d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5m-5 0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5M4.5 5.029l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06m6.53-.528a.5.5 0 0 0-.528.47l-.5 8.5a.5.5 0 0 0 .998.058l.5-8.5a.5.5 0 0 0-.47-.528M8 4.5a.5.5 0 0 0-.5.5v8.5a.5.5 0 0 0 1 0V5a.5.5 0 0 0-.5-.5"/>
+                            </svg>
+                        </button>
+                    </form>
+                </li>
+            {{/each}}
+        </ol>
+    </div>
+
+    <script>
+        document.querySelector("#generate-pdf").addEventListener("click", () => {
+            const content = document.querySelector("#content");
+
+            if (!content) {
+                alert("Erro: Conteúdo não encontrado.");
+                return;
+            }
+
+            const options = {
+                margin: 10,
+                filename: "arquivo.pdf",
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
+            };
+
+            html2pdf().set(options).from(content).save();
+        });
+    </script>
+</body>
+</html>

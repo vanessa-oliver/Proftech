@@ -9,7 +9,7 @@ router.get('/listprova', function(req, res) {
         res.render('Exam/listprova', { provas: provas});
     }).catch(function(error) {
         console.error(error);
-        res.status(500).send("Ocorreu um erro ao buscar as provas.");
+        res.status(500).send("Ocorreu um erro ao buscar as provas." +error);
     });
 });
 
@@ -32,13 +32,13 @@ router.get('/readprova/:cod_prova', async (req, res) =>{
         }));
 
         console.log(lista_questoes);
-
         console.log('prova encontrada: ' + prova);
+
         if (!prova) {
             res.status(404).send("prova não encontrada!");
             return;
         }
-        res.render('prova', { prova: prova.dataValues, questoes: lista_questoes.filter(q => q !== null) });
+        res.render('Exam/prova', { prova: prova.dataValues, questoes: lista_questoes.filter(q => q !== null) });
     } catch (error) {
         // console.error("Erro ao buscar prova11:", error);
         res.status(500).send('Erro ao buscar a prova. ' + error);   
@@ -62,7 +62,7 @@ router.post('/adicionar_questao', function(req, res) {
         cod_prova: cod_prova,
         cod_questao: cod_questao
     }).then(function() {
-        res.redirect('/readprova/' + cod_prova);
+        res.redirect('/Exam/readprova/' + cod_prova);
     }).catch(function(erro) {
         res.send("codigo questao não reconhecido");
     });
@@ -79,7 +79,7 @@ router.post('/remover_questao', function(req, res) {
         }
     }).then(function(deleted) {
         if (deleted) {
-            res.redirect('/readprova/' + cod_prova);
+            res.redirect('/Exam/readprova/' + cod_prova);
         } else {
             res.status(404).send('questao não encontrada.');
         }
@@ -101,7 +101,7 @@ router.post('/addprova', function(req, res) {
         cod_usuario: req.body.cod_usuario,
         cod_assunto: req.body.cod_assunto
     }).then(function() {
-        res.redirect('/listprova');
+        res.redirect('/Exam/listprova');
     }).catch(function(erro) {
         res.send("Erro ao cadastrar prova: " + erro);
     });
@@ -116,7 +116,7 @@ router.post('/del_prova/:cod_prova', function(req, res) {
 
     .then(function(deleted) {
         if (deleted) {
-            res.redirect('/listprova');
+            res.redirect('/Exam/listprova');
         } else {
             res.status(404).send('prova não encontrada');
         }
@@ -151,7 +151,7 @@ router.post('/atualizarprova/:cod_prova', async (req, res) => {
             {nome_prova, data, cod_assunto, cod_usuario},
             { where: {cod_prova: req.params.cod_prova} }
         );
-        res.redirect('/listprova');
+        res.redirect('/Exam/listprova');
     } catch (error) {
         res.status(500).send('erro ao atualizar prova' + error);
     }

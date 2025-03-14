@@ -1,13 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const Assunto = require('../models/Assunto');
+const Prova = require('../models/Prova')
 
 router.get('/listassunto', function(req, res) {
     Assunto.findAll().then(function(assuntos) {
         res.render('Subject/listassunto', { assuntos: assuntos});
     }).catch(function(error) {
         console.error(error);
-        res.status(500).send("Ocorreu um erro ao buscar os assuntos.");
+        res.status(500).send("Ocorreu um erro ao buscar os assuntos." + error);
     });
 });
 
@@ -21,7 +22,7 @@ router.post('/addassunto', function(req, res) {
     Assunto.create({
         nome_assunto: req.body.nome_assunto,
     }).then(function() {
-        res.redirect('/listassunto');
+        res.redirect('/Subject/listassunto');
     }).catch(function(erro) {
         res.send("Erro ao cadastrar assunto: " + erro);
     });
@@ -36,7 +37,7 @@ router.post('/del_assunto/:cod_assunto', function(req, res) {
 
     .then(function(deleted) {
         if (deleted) {
-            res.redirect('/listassunto');
+            res.redirect('/Subject/listassunto');
         } else {
             res.status(404).send('assunto não encontrada');
         }
@@ -61,6 +62,7 @@ router.get('/updateassunto/:cod_assunto', async(req, res)=> {
     }    
 });
 
+
 // Rota para atualizar assunto
 router.post('/atualizarassunto/:cod_assunto', async (req, res) => {
     console.log('entrou no atualizar assunto')
@@ -72,7 +74,7 @@ router.post('/atualizarassunto/:cod_assunto', async (req, res) => {
             {nome_assunto},
             { where: { cod_assunto: req.params.cod_assunto } }
         );
-        res.redirect('/listassunto');
+        res.redirect('/Subject/listassunto');
     } catch (error) {
         res.status(500).send('erro ao atualizar assunto');
     }
