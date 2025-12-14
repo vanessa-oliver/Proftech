@@ -1,0 +1,91 @@
+<div class="container-fluid mt-5 mb-5" style="padding: 0 40px;">
+  <div class="row mb-4">
+    <div class="col-12 text-center">
+      <h1 class="mb-4">📋 Minhas Provas</h1>
+    </div>
+  </div>
+
+  {{#if provas.length}}
+    <div class="row">
+      {{#each provas}}
+        <div class="col-md-6 col-lg-4 mb-4">
+          <div class="card h-100 shadow-sm">
+            <div class="card-header bg-primary text-white">
+              <h5 class="card-title mb-0">{{nome_prova}}</h5>
+            </div>
+            <div class="card-body">
+              <p class="mb-2"><strong>📅 Data:</strong> {{data}}</p>
+              <p class="mb-2"><strong>📚 Assunto:</strong> {{cod_assunto}}</p>
+              <p class="mb-3"><strong>👤 Criador:</strong> {{cod_usuario}}</p>
+              
+              <div class="d-grid gap-2">
+                <a href="/exam/readprova/{{cod_prova}}" class="btn btn-info btn-sm">
+                  <i class="bi bi-eye"></i> Visualizar
+                </a>
+                <a href="/exam/downloadprova/{{cod_prova}}" class="btn btn-success btn-sm">
+                  <i class="bi bi-file-pdf"></i> Download PDF
+                </a>
+                <form action="/exam/del_prova/{{cod_prova}}" method="POST">
+                  <button type="submit" class="btn btn-danger btn-sm w-100" onclick="return confirm('Tem certeza que deseja deletar?')">
+                    <i class="bi bi-trash"></i> Deletar
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      {{/each}}
+    </div>
+  {{else}}
+    <div class="row">
+      <div class="col-12">
+        <div class="alert alert-info alert-lg" role="alert">
+          <i class="bi bi-info-circle"></i> <strong>Nenhuma prova criada ainda!</strong>
+          <a href="/exam/createprova" class="alert-link">Clique aqui para criar a primeira</a>
+        </div>
+      </div>
+    </div>
+  {{/if}}
+</div>
+
+<!-- Botão Flutuante Redondo -->
+<a href="/exam/createprova" class="btn-floating">
+  <i class="bi bi-plus-circle"></i>
+</a>
+
+<style>
+  .card {
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: none;
+  }
+
+  .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15) !important;
+  }
+
+  .card-header {
+    border-bottom: 2px solid #667eea;
+  }
+
+  .btn-sm {
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+  }
+
+  .alert-lg {
+    padding: 2rem;
+    font-size: 1.1rem;
+  }
+
+  h1 {
+    color: #333;
+    font-weight: 600;
+  }
+
+  @media (max-width: 768px) {
+    .col-md-6 {
+      flex: 0 0 100%;
+    }
+  }
+</style>

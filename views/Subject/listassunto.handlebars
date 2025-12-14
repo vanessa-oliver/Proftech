@@ -1,0 +1,84 @@
+<div class="container-fluid mt-5 mb-5" style="padding: 0 40px;">
+  <div class="row mb-4">
+    <div class="col-12">
+      <h1 class="mb-4">📚 Assuntos</h1>
+      <a href="/subject/createassunto" class="btn btn-primary btn-lg">
+        <i class="bi bi-plus-circle"></i> Adicionar Assunto
+      </a>
+    </div>
+  </div>
+
+  {{#if assuntos.length}}
+    <div class="row">
+      {{#each assuntos}}
+        <div class="col-md-6 col-lg-4 mb-4">
+          <div class="card h-100 shadow-sm">
+            <div class="card-header bg-success text-white">
+              <h5 class="card-title mb-0">{{nome_assunto}}</h5>
+            </div>
+            <div class="card-body">
+              <p class="mb-3"><strong>Código:</strong> {{cod_assunto}}</p>
+              
+              <div class="d-grid gap-2">
+                <a href="/subject/updateassunto/{{cod_assunto}}" class="btn btn-warning btn-sm">
+                  <i class="bi bi-pencil"></i> Editar
+                </a>
+                <form action="/subject/del_assunto/{{cod_assunto}}" method="POST">
+                  <button type="submit" class="btn btn-danger btn-sm w-100" onclick="return confirm('Tem certeza que deseja deletar?')">
+                    <i class="bi bi-trash"></i> Deletar
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      {{/each}}
+    </div>
+  {{else}}
+    <div class="row">
+      <div class="col-12">
+        <div class="alert alert-info alert-lg" role="alert">
+          <i class="bi bi-info-circle"></i> <strong>Nenhum assunto criado ainda!</strong>
+          <a href="/subject/createassunto" class="alert-link">Clique aqui para criar</a>
+        </div>
+      </div>
+    </div>
+  {{/if}}
+</div>
+
+<style>
+  .card {
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: none;
+  }
+
+  .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15) !important;
+  }
+
+  .card-header {
+    border-bottom: 2px solid #28a745;
+  }
+
+  .btn-sm {
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+  }
+
+  .alert-lg {
+    padding: 2rem;
+    font-size: 1.1rem;
+  }
+
+  h1 {
+    color: #333;
+    font-weight: 600;
+  }
+
+  @media (max-width: 768px) {
+    .col-md-6 {
+      flex: 0 0 100%;
+    }
+  }
+</style>

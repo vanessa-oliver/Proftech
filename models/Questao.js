@@ -3,7 +3,6 @@ const Assunto = require('./Assunto');
 const { Sequelize, DataTypes } = require('sequelize');
 const sq = require('../config/database.js');
 
-
 const Questao = sq.sequelize.define('Questao', { 
     cod_questao: {
         type: DataTypes.INTEGER, 
@@ -37,9 +36,6 @@ const Questao = sq.sequelize.define('Questao', {
     modelName: 'questao',
     tableName: 'questao',
     timestamps: false 
-
 });
 
-
-model: Usuario, Assunto;
 module.exports = Questao;

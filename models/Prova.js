@@ -1,3 +1,5 @@
+const Assunto = require('./Assunto'); 
+const Usuario= require('./Usuario.js');
 const { Sequelize, DataTypes } = require('sequelize');
 const sq = require('../config/database.js');
 
@@ -6,6 +8,7 @@ const Prova = sq.sequelize.define('Prova', {
         type: DataTypes.INTEGER, 
         autoIncrement: true, 
         primaryKey: true }, 
+        
     nome_prova: { 
         type: DataTypes.STRING(50), 
         allowNull: false 
@@ -22,7 +25,19 @@ const Prova = sq.sequelize.define('Prova', {
             model: Assunto,
             key: 'cod_assunto' 
         } 
+    },
+    cod_usuario:{
+        type: DataTypes.INTEGER,
+        allowNull:false,
+        references:{
+            model:Usuario,
+            key:"cod_usuario"
+        }
     }
+},{
+    modelName: 'prova',
+    tableName: 'prova',
+    timestamps: false 
 });
 
 module.exports = Prova;

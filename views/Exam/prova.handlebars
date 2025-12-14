@@ -1,0 +1,183 @@
+<div class="container-fluid mt-5 mb-5" style="padding: 0 40px;">
+    <div class="row">
+        <div class="col-12">
+            <div class="prova-card">
+                <div class="prova-header">
+                    <h1 class="prova-title">📄 {{prova.nome_prova}}</h1>
+                    <p class="prova-date">📅 Data: {{prova.data}}</p>
+                </div>
+
+                <div class="prova-content">
+                    <h3 class="questoes-title">Questões da Prova</h3>
+                    
+                    {{#if questoes.length}}
+                        <div class="questoes-list">
+                            {{#each questoes}}
+                                <div class="questao-card">
+                                    <div class="questao-number">Questão {{@index}}</div>
+                                    <div class="questao-body">
+                                        <p class="questao-enunciado">{{this.enunciado}}</p>
+                                        <form action="/exam/remover_questao" method="POST" class="remover-form">
+                                            <input type="hidden" name="cod_prova" value="{{../prova.cod_prova}}">
+                                            <input type="hidden" name="cod_questao" value="{{this.cod_questao}}">
+                                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Deseja remover esta questão?')">
+                                                <i class="bi bi-trash"></i> Remover
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            {{/each}}
+                        </div>
+                    {{else}}
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle"></i> Nenhuma questão adicionada a esta prova.
+                        </div>
+                    {{/if}}
+                </div>
+
+                <div class="prova-actions">
+                    <a href="/exam/adicionar_questao/{{prova.cod_prova}}" class="btn btn-primary btn-lg">
+                        <i class="bi bi-plus-circle"></i> Adicionar Questão
+                    </a>
+                    <a href="/exam/downloadprova/{{prova.cod_prova}}" class="btn btn-success btn-lg">
+                        <i class="bi bi-file-pdf"></i> Gerar PDF
+                    </a>
+                    <a href="/exam/listprova" class="btn btn-secondary btn-lg">
+                        <i class="bi bi-arrow-left"></i> Voltar
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.prova-card {
+    background: white;
+    border-radius: 12px;
+    padding: 40px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.prova-header {
+    border-bottom: 3px solid #667eea;
+    padding-bottom: 20px;
+    margin-bottom: 30px;
+}
+
+.prova-title {
+    color: #333;
+    font-weight: 700;
+    font-size: 2rem;
+    margin-bottom: 10px;
+}
+
+.prova-date {
+    color: #666;
+    font-size: 1.1rem;
+    margin-bottom: 0;
+}
+
+.questoes-title {
+    color: #333;
+    font-weight: 600;
+    margin-bottom: 20px;
+    font-size: 1.3rem;
+}
+
+.questoes-list {
+    display: grid;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.questao-card {
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    padding: 20px;
+    background-color: #f8f9fa;
+    transition: all 0.3s ease;
+}
+
+.questao-card:hover {
+    border-color: #667eea;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+}
+
+.questao-number {
+    display: inline-block;
+    background-color: #667eea;
+    color: white;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+}
+
+.questao-body {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    gap: 20px;
+}
+
+.questao-enunciado {
+    flex: 1;
+    color: #333;
+    font-size: 1.05rem;
+    margin-bottom: 0;
+    line-height: 1.6;
+}
+
+.remover-form {
+    flex-shrink: 0;
+}
+
+.prova-actions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    padding-top: 20px;
+    border-top: 2px solid #e9ecef;
+}
+
+.btn-lg {
+    padding: 12px 20px;
+    font-size: 1rem;
+}
+
+@media (max-width: 768px) {
+    .prova-card {
+        padding: 20px;
+    }
+
+    .prova-title {
+        font-size: 1.5rem;
+    }
+
+    .questao-body {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .remover-form {
+        width: 100%;
+    }
+
+    .remover-form .btn {
+        width: 100%;
+    }
+
+    .prova-actions {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+            };
+
+            html2pdf().set(options).from(content).save();
+        });
+    </script>
+</body>
+</html>

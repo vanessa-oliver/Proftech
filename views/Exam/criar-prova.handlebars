@@ -1,0 +1,217 @@
+<div class="create-prova-container">
+    <div class="create-prova-wrapper">
+        <div class="form-card">
+            <h2 class="section-title mb-4">
+                <i class="bi bi-plus-circle"></i> Criar Nova Prova
+            </h2>
+
+            <form action="/exam/addprova" method="POST" id="formProva">
+                    <!-- Informações Básicas -->
+                    <div class="form-section mb-4">
+                        <h5 class="form-section-title">📋 Informações da Prova</h5>
+                        
+                        <div class="form-group mb-3">
+                            <label for="nome_prova" class="form-label">
+                                <i class="bi bi-pencil"></i> Nome da Prova *
+                            </label>
+                            <input type="text" class="form-control form-control-lg" id="nome_prova" name="nome_prova" 
+                                placeholder="Ex: Avaliação de Matemática" required>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="data" class="form-label">
+                                        <i class="bi bi-calendar"></i> Data da Prova *
+                                    </label>
+                                    <input type="date" class="form-control form-control-lg" id="data" name="data" required>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="cod_assunto" class="form-label">
+                                        <i class="bi bi-book"></i> Assunto *
+                                    </label>
+                                    <select class="form-select form-select-lg" id="cod_assunto" name="cod_assunto" required>
+                                        <option value="">Selecione um assunto</option>
+                                        {{#each assuntos}}
+                                            <option value="{{cod_assunto}}">{{nome_assunto}}</option>
+                                        {{/each}}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Seleção de Questões -->
+                    <div class="form-section mb-4">
+                        <h5 class="form-section-title">
+                            ❓ Selecionar Questões
+                            <span class="contador-questoes">(0 selecionadas)</span>
+                        </h5>
+                        
+                        {{#if questoes.length}}
+                            <div class="questoes-container">
+                                {{#each questoes}}
+                                    <div class="questao-item">
+                                        <div class="form-check">
+                                            <input class="form-check-input checkbox-questao" type="checkbox" 
+                                                id="quest_{{cod_questao}}" name="questoes_selecionadas" 
+                                                value="{{cod_questao}}">
+                                            <label class="form-check-label" for="quest_{{cod_questao}}">
+                                                <strong>Questão {{cod_questao}}:</strong>
+                                                <p class="enunciado-preview">{{enunciado}}</p>
+                                            </label>
+                                        </div>
+                                    </div>
+                                {{/each}}
+                            </div>
+                        {{else}}
+                            <div class="alert alert-warning">
+                                <i class="bi bi-exclamation-triangle"></i> Nenhuma questão criada. 
+                                <a href="/quest/createquest">Crie questões primeiro</a>
+                            </div>
+                        {{/if}}
+                    </div>
+
+                    <!-- Botões -->
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="bi bi-check-circle"></i> Criar Prova e Gerar PDF
+                        </button>
+                        <a href="/exam/listprova" class="btn btn-secondary btn-lg">
+                            <i class="bi bi-x-circle"></i> Cancelar
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.create-prova-container {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+    background-color: #f9fafb;
+}
+
+.create-prova-wrapper {
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.form-card {
+    background: white;
+    border-radius: 12px;
+    padding: 40px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.section-title {
+    color: #667eea;
+    font-weight: 700;
+    border-bottom: 3px solid #667eea;
+    padding-bottom: 15px;
+    margin-bottom: 25px;
+    font-size: 1.5rem;
+}
+
+.form-section-title {
+    color: #333;
+    font-weight: 600;
+    margin-bottom: 20px;
+    font-size: 1.1rem;
+}
+
+.form-check-label {
+    cursor: pointer;
+    margin-left: 10px;
+    font-size: 1rem;
+    user-select: none;
+}
+
+.enunciado-preview {
+    font-size: 0.95rem;
+    color: #666;
+    margin: 8px 0 0 0;
+}
+
+.questoes-container {
+    max-height: 500px;
+    overflow-y: auto;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    padding: 20px;
+    background-color: #f8f9fa;
+}
+
+.questao-item {
+    padding: 25px 20px;
+    border-bottom: 1px solid #ddd;
+    transition: background-color 0.2s;
+}
+
+.questao-item:hover {
+    background-color: #fff;
+}
+
+.questao-item:last-child {
+    border-bottom: none;
+}
+
+.form-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.form-actions button,
+.form-actions a {
+    padding: 12px 20px;
+    font-size: 1.05rem;
+}
+
+.contador-questoes {
+    font-size: 0.9rem;
+    color: #999;
+    font-weight: normal;
+    display: block;
+    margin-top: 5px;
+}
+
+.form-control-lg,
+.form-select-lg {
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+}
+
+@media (max-width: 768px) {
+    .create-prova-container {
+        padding: 1rem 0.5rem;
+    }
+
+    .form-card {
+        padding: 20px;
+    }
+
+    .section-title {
+        font-size: 1.2rem;
+    }
+
+    .form-actions {
+        grid-template-columns: 1fr;
+    }
+
+    .questoes-container {
+        max-height: 400px;
+    }
+}
+</style>

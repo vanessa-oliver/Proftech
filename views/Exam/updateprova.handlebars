@@ -1,0 +1,17 @@
+<h1>atualizar prova {{prova.nome_prova}}</h1>
+
+<form action="/exam/atualizarprova/{{prova.cod_prova}}" method="post">
+    <label>nome prova</label>
+    <input type="text" id="nome_prova" name="nome_prova" placeholder="nome_prova" value="{{prova.nome_prova}}">
+    <br>
+    <label>data</label>
+    <input type="date" id="data" name="data" placeholder="data" value="{{prova.data}}">
+    <br>
+    <label>codigo do usuario</label>    
+    <input type="text" id="cod_usuario" name="cod_usuario" placeholder="codigo do usuario" value="{{prova.cod_usuario}}">
+    <br>
+    <label>codigo do assunto</label>
+    <input type="text" id="cod_assunto" name="cod_assunto" placeholder="codigo do assunto" value="{{prova.cod_assunto}}">
+    <br>
+    <button type="submit">editar</button>
+</form>

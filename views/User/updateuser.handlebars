@@ -1,0 +1,15 @@
+
+<h1>atualizar usuario {{usuario.nome}}</h1>
+
+<form action="/atualizar/{{usuario.cod_usuario}}" method="POST">
+    <label>Nome:</label>
+    <input type="text" name="nome" value="{{usuario.nome}}" required>
+    <br><br>
+    <label>Email:</label>
+    <input type="email" name="email" value="{{usuario.email}}" required>
+    <br><br>
+    <label>Senha:</label>
+    <input type="password" name="password" required>
+    <br><br>
+    <button type="submit">Atualizar</button>
+</form>

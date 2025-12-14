@@ -1,0 +1,416 @@
+<div class="container mt-5 mb-5">
+    <!-- Seção de Provas Existentes -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <h2 class="section-title mb-4">
+                <i class="bi bi-list-check"></i> Provas Existentes
+            </h2>
+            
+            {{#if provas.length}}
+                <div class="provas-grid">
+                    {{#each provas}}
+                        <div class="prova-card">
+                            <div class="prova-header">
+                                <h5 class="prova-title">{{this.nome_prova}}</h5>
+                                <span class="badge badge-primary">{{this.cod_prova}}</span>
+                            </div>
+                            <div class="prova-body">
+                                <p><strong>Data:</strong> {{#if this.data}}{{this.data}}{{else}}Não definida{{/if}}</p>
+                                <p><strong>Assunto:</strong> {{this.cod_assunto}}</p>
+                                <p><strong>Criador:</strong> {{this.cod_usuario}}</p>
+                            </div>
+                            <div class="prova-footer">
+                                <a href="/exam/readprova/{{this.cod_prova}}" class="btn btn-sm btn-info">
+                                    <i class="bi bi-eye"></i> Visualizar
+                                </a>
+                                <a href="/exam/downloadprova/{{this.cod_prova}}" class="btn btn-sm btn-success">
+                                    <i class="bi bi-file-pdf"></i> PDF
+                                </a>
+                                <form action="/exam/del_prova/{{this.cod_prova}}" method="POST" style="display: inline;">
+                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Tem certeza?')">
+                                        <i class="bi bi-trash"></i> Deletar
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    {{/each}}
+                </div>
+            {{else}}
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i> Nenhuma prova criada ainda. Crie sua primeira prova abaixo!
+                </div>
+            {{/if}}
+        </div>
+    </div>
+
+    <!-- Seção de Criação de Nova Prova -->
+    <div class="row">
+        <div class="col-lg-8 offset-lg-2">
+            <div class="form-card">
+                <h2 class="section-title mb-4">
+                    <i class="bi bi-plus-circle"></i> Criar Nova Prova
+                </h2>
+
+                <form action="/exam/addprova" method="POST" id="formProva">
+                    <!-- Informações Básicas -->
+                    <div class="form-section mb-4">
+                        <h5 class="form-section-title">Informações da Prova</h5>
+                        
+                        <div class="form-group mb-3">
+                            <label for="nome_prova" class="form-label">
+                                <i class="bi bi-pencil"></i> Nome da Prova *
+                            </label>
+                            <input type="text" class="form-control" id="nome_prova" name="nome_prova" 
+                                placeholder="Ex: Avaliação de Matemática" required>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group mb-3 col-md-6">
+                                <label for="data" class="form-label">
+                                    <i class="bi bi-calendar"></i> Data da Prova *
+                                </label>
+                                <input type="date" class="form-control" id="data" name="data" required>
+                            </div>
+
+                            <div class="form-group mb-3 col-md-6">
+                                <label for="cod_assunto" class="form-label">
+                                    <i class="bi bi-book"></i> Assunto *
+                                </label>
+                                <select class="form-select" id="cod_assunto" name="cod_assunto" required>
+                                    <option value="">Selecione um assunto</option>
+                                    {{#each assuntos}}
+                                        <option value="{{this.cod_assunto}}">{{this.nome_assunto}}</option>
+                                    {{/each}}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Seleção de Questões -->
+                    <div class="form-section mb-4">
+                        <h5 class="form-section-title">
+                            Selecionar Questões
+                            <span class="contador-questoes">(0 selecionadas)</span>
+                        </h5>
+                        
+                        {{#if questoes.length}}
+                            <div class="questoes-container">
+                                {{#each questoes}}
+                                    <div class="questao-item">
+                                        <div class="form-check">
+                                            <input class="form-check-input checkbox-questao" type="checkbox" 
+                                                id="quest_{{this.cod_questao}}" name="questoes_selecionadas" 
+                                                value="{{this.cod_questao}}">
+                                            <label class="form-check-label" for="quest_{{this.cod_questao}}">
+                                                <strong>Questão {{this.cod_questao}}:</strong>
+                                                <p class="enunciado-preview">{{this.enunciado}}</p>
+                                            </label>
+                                        </div>
+                                    </div>
+                                {{/each}}
+                            </div>
+                        {{else}}
+                            <div class="alert alert-warning">
+                                <i class="bi bi-exclamation-triangle"></i> Nenhuma questão criada. 
+                                <a href="/quest/createquest">Crie questões primeiro</a>
+                            </div>
+                        {{/if}}
+                    </div>
+
+                    <!-- Visualização de Questões Selecionadas -->
+                    <div class="form-section mb-4" id="questoesResumo" style="display: none;">
+                        <h5 class="form-section-title">Questões Selecionadas</h5>
+                        <div id="listaQuestoesSelecionadas" class="questoes-selecionadas-list">
+                            <!-- Preenchido dinamicamente por JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Botões -->
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="bi bi-check-circle"></i> Criar Prova e Gerar PDF
+                        </button>
+                        <a href="/exam/listprova" class="btn btn-secondary btn-lg">
+                            <i class="bi bi-x-circle"></i> Cancelar
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .section-title {
+        color: #667eea;
+        font-weight: 600;
+        border-bottom: 2px solid #667eea;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+    }
+
+    .provas-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+        margin-bottom: 40px;
+    }
+
+    .prova-card {
+        background: white;
+        border: 1px solid #e0e0e0;
+        border-radius: 10px;
+        padding: 20px;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .prova-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 16px rgba(102, 126, 234, 0.2);
+    }
+
+    .prova-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .prova-title {
+        margin: 0;
+        color: #333;
+    }
+
+    .badge-primary {
+        background: #667eea;
+        padding: 4px 10px;
+        font-size: 11px;
+        color: white;
+    }
+
+    .prova-body {
+        margin-bottom: 15px;
+        font-size: 13px;
+        color: #666;
+    }
+
+    .prova-body p {
+        margin: 5px 0;
+    }
+
+    .prova-footer {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .prova-footer .btn {
+        font-size: 12px;
+        padding: 5px 10px;
+    }
+
+    .form-card {
+        background: white;
+        border-radius: 12px;
+        padding: 30px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-section {
+        background: #f8f9fa;
+        border-left: 4px solid #667eea;
+        padding: 20px;
+        border-radius: 8px;
+    }
+
+    .form-section-title {
+        color: #333;
+        font-weight: 600;
+        margin-bottom: 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .contador-questoes {
+        font-size: 12px;
+        font-weight: 400;
+        color: #999;
+        background: white;
+        padding: 2px 8px;
+        border-radius: 12px;
+    }
+
+    .questoes-container {
+        max-height: 500px;
+        overflow-y: auto;
+        background: white;
+        border-radius: 8px;
+        padding: 15px;
+    }
+
+    .questao-item {
+        padding: 15px;
+        margin-bottom: 10px;
+        background: #fafafa;
+        border-radius: 6px;
+        border-left: 3px solid #ddd;
+        transition: all 0.2s ease;
+    }
+
+    .questao-item:hover {
+        background: #f0f0f0;
+        border-left-color: #667eea;
+    }
+
+    .form-check-label {
+        margin-left: 8px;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .enunciado-preview {
+        font-size: 13px;
+        color: #666;
+        margin: 5px 0 0 0;
+        font-weight: normal;
+        line-height: 1.4;
+    }
+
+    .questoes-selecionadas-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 15px;
+    }
+
+    .questao-selecionada-badge {
+        background: #e7f3ff;
+        border: 1px solid #667eea;
+        border-radius: 6px;
+        padding: 12px;
+        color: #333;
+        font-size: 13px;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 15px;
+        margin-top: 30px;
+        justify-content: center;
+    }
+
+    .form-actions .btn {
+        min-width: 200px;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 15px;
+    }
+
+    .alert {
+        border-radius: 8px;
+        padding: 15px 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .alert-info {
+        background: #e7f3ff;
+        border-left: 4px solid #667eea;
+        color: #004085;
+    }
+
+    .alert-warning {
+        background: #fff3cd;
+        border-left: 4px solid #ffc107;
+        color: #856404;
+    }
+
+    @media (max-width: 768px) {
+        .form-card {
+            padding: 20px;
+        }
+
+        .form-section {
+            padding: 15px;
+        }
+
+        .provas-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .form-actions {
+            flex-direction: column;
+        }
+
+        .form-actions .btn {
+            width: 100%;
+        }
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const checkboxes = document.querySelectorAll('.checkbox-questao');
+    const listaQuestoes = document.getElementById('listaQuestoesSelecionadas');
+    const questoesResumo = document.getElementById('questoesResumo');
+    const contadorQuestoes = document.querySelector('.contador-questoes');
+
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            atualizarResumoQuestoes();
+        });
+    });
+
+    function atualizarResumoQuestoes() {
+        const selecionadas = document.querySelectorAll('.checkbox-questao:checked');
+        
+        // Atualizar contador
+        contadorQuestoes.textContent = `(${selecionadas.length} selecionadas)`;
+
+        // Atualizar resumo
+        if (selecionadas.length > 0) {
+            questoesResumo.style.display = 'block';
+            listaQuestoes.innerHTML = '';
+
+            selecionadas.forEach(checkbox => {
+                const questaoItem = checkbox.closest('.questao-item');
+                const questionText = questaoItem.querySelector('label strong').textContent;
+                
+                const badge = document.createElement('div');
+                badge.className = 'questao-selecionada-badge';
+                badge.innerHTML = `
+                    <strong>${questionText}</strong><br>
+                    <small>${questaoItem.querySelector('.enunciado-preview').textContent}</small>
+                `;
+                listaQuestoes.appendChild(badge);
+            });
+        } else {
+            questoesResumo.style.display = 'none';
+        }
+    }
+
+    // Validação do formulário
+    const form = document.getElementById('formProva');
+    form.addEventListener('submit', function(e) {
+        const nome = document.getElementById('nome_prova').value.trim();
+        const data = document.getElementById('data').value;
+        const assunto = document.getElementById('cod_assunto').value;
+        const usuario = document.getElementById('cod_usuario').value;
+
+        if (!nome || !data || !assunto || !usuario) {
+            e.preventDefault();
+            alert('Preencha todos os campos obrigatórios!');
+            return false;
+        }
+    });
+});
+</script>
