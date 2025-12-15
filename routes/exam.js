@@ -9,7 +9,6 @@ const PDFDocument = require('pdfkit');
 const fs = require('fs');
 const path = require('path');
 
-// Rota para listar provas
 router.get('/listprova', function(req, res) {
     Prova.findAll().then(function(provas) {
         const provasData = provas.map(prova => prova.get({ plain: true }));
@@ -20,11 +19,9 @@ router.get('/listprova', function(req, res) {
     });
 });
 
-// Rota para exibir prova
 router.get('/readprova/:cod_prova', async (req, res) =>{
     try {
         const cod_prova = req.params.cod_prova;
-        console.log('Buscando prova com código: ' + cod_prova);
         const prova = await Prova.findByPk(cod_prova);
 
         lista_prova_questao = await questaoprova.findAll({
@@ -38,9 +35,6 @@ router.get('/readprova/:cod_prova', async (req, res) =>{
             return questao ? { cod_questao: questao.cod_questao, enunciado: questao.enunciado } : null;
         }));
 
-        console.log(lista_questoes);
-        console.log('prova encontrada: ' + prova);
-
         if (!prova) {
             res.status(404).send("Prova não encontrada!");
             return;
@@ -52,13 +46,18 @@ router.get('/readprova/:cod_prova', async (req, res) =>{
     }
 });
 
-// Rota para adicionar questão a prova
-router.get('/adicionar_questao/:cod_prova', (req, res) => {
-    const cod_prova = req.params.cod_prova;
-    res.render('Exam/adicionar_a_prova', { cod_prova });
+router.get('/adicionar_questao/:cod_prova', async (req, res) => {
+    try {
+        const cod_prova = req.params.cod_prova;
+        const questoes = await Questao.findAll();
+        const questoesData = questoes.map(q => q.get({ plain: true }));
+        res.render('Exam/adicionar_a_prova', { cod_prova, questoes: questoesData });
+    } catch (error) {
+        console.error('Erro ao buscar questões:', error);
+        res.status(500).send('Erro ao carregar questões');
+    }
 });
 
-// Rota para adicionar questão a prova
 router.post('/adicionar_questao', function(req, res) {
     const { cod_prova, cod_questao } = req.body;
 
@@ -75,7 +74,6 @@ router.post('/adicionar_questao', function(req, res) {
     });
 });
 
-// Rota para remover questão da prova
 router.post('/remover_questao', function(req, res) {
     const { cod_prova, cod_questao } = req.body;
 
@@ -95,17 +93,19 @@ router.post('/remover_questao', function(req, res) {
     });
 });
 
-// Rota para criar prova - mostra apenas o formulário de criar nova prova
 router.get('/createprova', async (req, res) => {
     try {
         const questoes = await Questao.findAll();
         const assuntos = await Assunto.findAll();
+        const usuarios = await Usuario.findAll();
         const questoesData = questoes.map(q => q.get({ plain: true }));
         const assuntosData = assuntos.map(a => a.get({ plain: true }));
+        const usuariosData = usuarios.map(u => u.get({ plain: true }));
         
         res.render('Exam/criar-prova', { 
             questoes: questoesData,
-            assuntos: assuntosData
+            assuntos: assuntosData,
+            usuarios: usuariosData
         });
     } catch (error) {
         console.error('Erro ao buscar dados:', error);
@@ -114,21 +114,15 @@ router.get('/createprova', async (req, res) => {
     }
 });
 
-// Rota para adicionar prova 
 router.post('/addprova', async (req, res) => {
     try {
-        const { nome_prova, data, cod_assunto, questoes_selecionadas } = req.body;
+        const { nome_prova, data, cod_assunto, cod_usuario, questoes_selecionadas } = req.body;
 
-        // Validações
-        if (!nome_prova || !data || !cod_assunto) {
+        if (!nome_prova || !data || !cod_assunto || !cod_usuario) {
             req.flash("error_msg", "Preencha todos os campos obrigatórios!");
             return res.redirect('/exam/createprova');
         }
 
-        // Usar usuário logado ou padrão
-        let cod_usuario = req.user ? req.user.cod_usuario : 1;
-
-        // Criar prova
         const novaProva = await Prova.create({
             nome_prova: nome_prova,
             data: data,
@@ -136,7 +130,6 @@ router.post('/addprova', async (req, res) => {
             cod_assunto: cod_assunto
         });
 
-        // Adicionar questões à prova
         if (questoes_selecionadas && questoes_selecionadas.length > 0) {
             const questoesArray = Array.isArray(questoes_selecionadas) 
                 ? questoes_selecionadas 
@@ -152,7 +145,6 @@ router.post('/addprova', async (req, res) => {
 
         req.flash("success_msg", "Prova criada com sucesso!");
         
-        // Redirecionar para download de PDF
         res.redirect('/exam/downloadprova/' + novaProva.cod_prova);
 
     } catch (error) {
@@ -162,31 +154,25 @@ router.post('/addprova', async (req, res) => {
     }
 });
 
-// Rota para deletar prova
 router.post('/del_prova/:cod_prova', function(req, res) {
     const { cod_prova } = req.params;
-    console.log('[DEBUG] Requisição DELETE prova recebida. cod_prova=', cod_prova, ' ip=', req.ip, ' time=', new Date().toISOString());
     
     questaoprova.destroy({ where: { cod_prova } }).then(() => {
         return Prova.destroy({ where: { cod_prova: cod_prova } });
     }).then(function(deleted) {
         if (deleted) {
-            console.log('[DEBUG] Prova deletada com sucesso:', cod_prova);
             req.flash("success_msg", "Prova deletada com sucesso!");
             res.redirect('/exam/listprova');
         } else {
-            console.log('[DEBUG] Prova não encontrada ao deletar:', cod_prova);
             req.flash("error_msg", "Prova não encontrada");
             res.redirect('/exam/listprova');
         }
     }).catch(function(error){
-        console.error('[DEBUG] Erro ao deletar prova:', error);
         req.flash("error_msg", "Erro ao deletar prova: " + error);
         res.redirect('/exam/listprova');
     });
 });
 
-// Rota para exibir página de atualizar prova
 router.get('/updateprova/:cod_prova', async(req, res)=> {
     try{
         const cod_prova = req.params.cod_prova;
@@ -201,7 +187,6 @@ router.get('/updateprova/:cod_prova', async(req, res)=> {
     }  
 });
 
-// Rota para atualizar provas
 router.post('/atualizarprova/:cod_prova', async (req, res) => {
     const {nome_prova, data, cod_assunto, cod_usuario} = req.body;
     const {cod_prova} = req.params;
@@ -219,9 +204,7 @@ router.post('/atualizarprova/:cod_prova', async (req, res) => {
     }
 });
 
-// Rota para gerar e fazer download do PDF da prova
 router.get('/downloadprova/:cod_prova', async (req, res) => {
-    console.log('[DEBUG] Requisição download prova recebida. params=', req.params, ' ip=', req.ip, ' time=', new Date().toISOString());
     try {
         const cod_prova = req.params.cod_prova;
         const prova = await Prova.findByPk(cod_prova);
@@ -231,7 +214,6 @@ router.get('/downloadprova/:cod_prova', async (req, res) => {
             return res.redirect('/exam/listprova');
         }
 
-        // Buscar questões da prova
         const questoesProva = await questaoprova.findAll({
             where: { cod_prova: cod_prova }
         });
@@ -247,11 +229,9 @@ router.get('/downloadprova/:cod_prova', async (req, res) => {
             })
         );
 
-        // Buscar informações adicionais
         const assunto = await Assunto.findByPk(prova.cod_assunto);
         const usuario = await Usuario.findByPk(prova.cod_usuario);
 
-        // Gerar PDF
         const doc = new PDFDocument();
         const filename = `prova_${cod_prova}_${Date.now()}.pdf`;
         const filepath = path.join(__dirname, '../public', filename);
@@ -260,7 +240,6 @@ router.get('/downloadprova/:cod_prova', async (req, res) => {
 
         doc.pipe(stream);
 
-        // Cabeçalho
         doc.fontSize(20).font('Helvetica-Bold').text('PROVA', { align: 'center' });
         doc.fontSize(12).font('Helvetica').text(`Título: ${prova.nome_prova}`, { align: 'center' });
         doc.text(`Data: ${new Date(prova.data).toLocaleDateString('pt-BR')}`, { align: 'center' });
@@ -271,28 +250,22 @@ router.get('/downloadprova/:cod_prova', async (req, res) => {
         doc.fontSize(14).font('Helvetica-Bold').text(`Total de Questões: ${questoes.filter(q => q).length}`);
         doc.moveDown();
 
-        // Questões
         questoes.filter(q => q).forEach((questao, index) => {
             doc.fontSize(12).font('Helvetica-Bold').text(`Questão ${index + 1}:`, { indent: 20 });
             doc.fontSize(11).font('Helvetica').text(questao.enunciado, { indent: 40, width: 450 });
             doc.moveDown(0.5);
         });
 
-        // Rodapé
         doc.moveDown();
         doc.fontSize(10).font('Helvetica').text(`Gerado em: ${new Date().toLocaleString('pt-BR')}`, { align: 'center' });
 
-        // Finalizar PDF
         doc.end();
 
-        // Quando o arquivo for escrito, fazer download
         stream.on('finish', () => {
-            console.log('[DEBUG] PDF escrito em', filepath);
             res.download(filepath, `prova_${prova.nome_prova}.pdf`, (err) => {
                 if (err) {
                     console.error('Erro ao fazer download:', err);
                 }
-                // Deletar arquivo após download
                 setTimeout(() => {
                     if (fs.existsSync(filepath)) {
                         fs.unlinkSync(filepath);
@@ -313,7 +286,6 @@ router.get('/downloadprova/:cod_prova', async (req, res) => {
     }
 });
 
-// Rota para visualizar questões da prova
 router.get('/visualizar-questoes/:cod_prova', async (req, res) => {
     try {
         const cod_prova = req.params.cod_prova;

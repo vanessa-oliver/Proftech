@@ -1,19 +1,15 @@
-// Funcionalidades JavaScript para ProfTech
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Inicializar tooltips do Bootstrap
     const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
     const tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
         return new bootstrap.Tooltip(tooltipTriggerEl);
     });
 
-    // Inicializar popovers do Bootstrap
     const popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
     const popoverList = popoverTriggerList.map(function(popoverTriggerEl) {
         return new bootstrap.Popover(popoverTriggerEl);
     });
 
-    // Fechar offcanvas ao clicar em um link
     const offcanvasLinks = document.querySelectorAll('.offcanvas-body a');
     const offcanvasElement = document.getElementById('offcanvasExample');
     
@@ -29,7 +25,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Animação de fade in ao carregar
     const elements = document.querySelectorAll('.fade-in, .slide-up');
     elements.forEach(el => {
         el.style.opacity = '0';
@@ -39,7 +34,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 100);
     });
 
-    // Adicionar classe active ao link da navegação atual
     const currentLocation = location.pathname;
     const menuItems = document.querySelectorAll('.navbar-nav a, .offcanvas-body a');
     
@@ -49,7 +43,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Confirmação antes de deletar
     const deleteButtons = document.querySelectorAll('[data-delete-confirm]');
     deleteButtons.forEach(btn => {
         btn.addEventListener('click', function(e) {
@@ -59,7 +52,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Validação de formulários
     const forms = document.querySelectorAll('form');
     forms.forEach(form => {
         form.addEventListener('submit', function(e) {
@@ -81,7 +73,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        // Remover classe de erro ao começar a digitar
         form.querySelectorAll('input, textarea, select').forEach(input => {
             input.addEventListener('input', function() {
                 this.classList.remove('is-invalid');
@@ -89,7 +80,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Mostrar/Ocultar senha
     const togglePasswordButtons = document.querySelectorAll('.toggle-password');
     togglePasswordButtons.forEach(btn => {
         btn.addEventListener('click', function() {
@@ -104,7 +94,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Auto-hide de alertas após 5 segundos
     const alerts = document.querySelectorAll('.alert');
     alerts.forEach(alert => {
         setTimeout(() => {
@@ -112,11 +101,8 @@ document.addEventListener('DOMContentLoaded', function() {
             bsAlert.close();
         }, 5000);
     });
-
-    console.log('ProfTech - Sistema inicializado com sucesso!');
 });
 
-// Função auxiliar para enviar formulários via AJAX
 function submitFormAjax(formId, callback) {
     const form = document.getElementById(formId);
     if (!form) return;
@@ -149,13 +135,11 @@ function submitFormAjax(formId, callback) {
     });
 }
 
-// Função para formatar data
 function formatDate(date) {
     const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
     return new Date(date).toLocaleDateString('pt-BR', options);
 }
 
-// Função para mostrar notificação
 function showNotification(message, type = 'info', duration = 3000) {
     const alertDiv = document.createElement('div');
     alertDiv.className = `alert alert-${type} alert-dismissible fade show`;

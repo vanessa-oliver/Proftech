@@ -1,17 +1,234 @@
-<body>
-    <h1 class="title">Chat com Gemini</h1>
+<div class="ia-chat-container">
+    <div class="ia-chat-wrapper">
+        <div class="chat-card">
+            <div class="chat-header">
+                <h1 class="chat-title">
+                    <i class="bi bi-lightning-charge"></i> Gerar Questões com IA
+                </h1>
+                <p class="chat-subtitle">Descreva o tema e a IA criará uma questão para você</p>
+            </div>
 
-    <div id="chat-container">
-        <div id="messages"></div>
+            <div class="chat-messages" id="messages">
+                <div class="welcome-message">
+                    <i class="bi bi-chat-dots"></i>
+                    <p>Olá! Sou uma IA criada para ajudar você a gerar questões.</p>
+                    <p>Digite um tema ou comando e vou criar uma questão automaticamente.</p>
+                </div>
+            </div>
+
+            <div class="chat-input-section">
+                <div class="input-group">
+                    <input 
+                        type="text" 
+                        id="user-input" 
+                        class="form-control chat-input" 
+                        placeholder="Ex: Crie uma questão sobre a Revolução Francesa..."
+                        autocomplete="off">
+                    <button type="button" id="send-button" class="btn btn-primary btn-send">
+                        <i class="bi bi-send-fill"></i> Enviar
+                    </button>
+                </div>
+            </div>
+
+            <div class="chat-actions mt-4">
+                <button id="save-button" class="btn btn-success btn-lg w-100 mb-2">
+                    <i class="bi bi-download"></i> Salvar Questão Gerada
+                </button>
+                <a href="/quest/listquest" class="btn btn-secondary btn-lg w-100">
+                    <i class="bi bi-list"></i> Ver Minhas Questões
+                </a>
+            </div>
+        </div>
     </div>
-    
-    <div id="input-container">
-        <input type="text" id="user-input" placeholder="Faça uma pergunta ao Gemini">
-        <button id="send-button">Enviar</button>
-    </div>
+</div>
 
-    <button id="save-button">Salvar Conversa</button>
-    <a href="/quest/listquest"><button>Exibir Questões</button></a>
+<style>
+    .ia-chat-container {
+        width: 100%;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem 1rem;
+        background-color: #f9fafb;
+    }
 
-    <script src="/script.js"></script>
-</body>
+    .ia-chat-wrapper {
+        width: 100%;
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .chat-card {
+        background: white;
+        border-radius: 16px;
+        padding: 40px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        display: flex;
+        flex-direction: column;
+        height: 80vh;
+        max-height: 800px;
+    }
+
+    .chat-header {
+        text-align: center;
+        margin-bottom: 30px;
+        border-bottom: 2px solid #f0f0f0;
+        padding-bottom: 20px;
+    }
+
+    .chat-title {
+        color: #667eea;
+        font-weight: 700;
+        font-size: 1.8rem;
+        margin-bottom: 10px;
+    }
+
+    .chat-subtitle {
+        color: #999;
+        font-size: 1rem;
+        margin: 0;
+    }
+
+    .chat-messages {
+        flex: 1;
+        overflow-y: auto;
+        padding: 20px 0;
+        margin-bottom: 20px;
+        background-color: #f9fafb;
+        border-radius: 12px;
+        padding: 20px;
+    }
+
+    .welcome-message {
+        text-align: center;
+        padding: 40px 20px;
+        color: #666;
+    }
+
+    .welcome-message i {
+        font-size: 3rem;
+        color: #667eea;
+        margin-bottom: 15px;
+        display: block;
+    }
+
+    .welcome-message p {
+        font-size: 1.1rem;
+        margin: 10px 0;
+    }
+
+    .user-message {
+        background-color: #667eea;
+        color: white;
+        padding: 12px 16px;
+        border-radius: 12px;
+        margin-bottom: 12px;
+        max-width: 80%;
+        margin-left: auto;
+        word-wrap: break-word;
+    }
+
+    .bot-message {
+        background-color: #e9ecef;
+        color: #333;
+        padding: 12px 16px;
+        border-radius: 12px;
+        margin-bottom: 12px;
+        max-width: 80%;
+        margin-right: auto;
+        word-wrap: break-word;
+    }
+
+    .chat-input-section {
+        margin-bottom: 20px;
+    }
+
+    .input-group {
+        display: flex;
+        gap: 10px;
+        align-items: stretch;
+    }
+
+    .chat-input {
+        flex: 1;
+        padding: 12px 16px !important;
+        border: 2px solid #e9ecef !important;
+        border-radius: 8px;
+        font-size: 1rem;
+    }
+
+    .chat-input:focus {
+        border-color: #667eea !important;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25) !important;
+    }
+
+    .btn-send {
+        padding: 12px 24px;
+        font-size: 1rem;
+        font-weight: 600;
+        border-radius: 8px;
+        white-space: nowrap;
+    }
+
+    .chat-actions {
+        border-top: 2px solid #f0f0f0;
+        padding-top: 20px;
+    }
+
+    .btn-lg {
+        padding: 12px 20px;
+        font-size: 1rem;
+        font-weight: 600;
+    }
+
+    /* Scroll customizado para as mensagens */
+    .chat-messages::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .chat-messages::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+    }
+
+    .chat-messages::-webkit-scrollbar-thumb {
+        background: #667eea;
+        border-radius: 10px;
+    }
+
+    .chat-messages::-webkit-scrollbar-thumb:hover {
+        background: #5568d3;
+    }
+
+    @media (max-width: 768px) {
+        .ia-chat-container {
+            padding: 1rem 0.5rem;
+        }
+
+        .chat-card {
+            padding: 20px;
+            height: auto;
+            max-height: none;
+        }
+
+        .chat-title {
+            font-size: 1.5rem;
+        }
+
+        .user-message,
+        .bot-message {
+            max-width: 100%;
+        }
+
+        .input-group {
+            flex-direction: column;
+        }
+
+        .btn-send {
+            width: 100%;
+        }
+    }
+</style>
+
+<script src="/script.js"></script>

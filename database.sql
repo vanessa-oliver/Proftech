@@ -1,7 +1,4 @@
--- Database Schema - Projeto Integrador
--- Compatível com os models Sequelize
 
--- Table: assunto
 CREATE TABLE "assunto" (
     cod_assunto SERIAL PRIMARY KEY,
     nome_assunto VARCHAR(150) NOT NULL,
@@ -9,7 +6,6 @@ CREATE TABLE "assunto" (
     "updatedAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Table: usuario
 CREATE TABLE "usuario" (
     cod_usuario SERIAL PRIMARY KEY,
     nome VARCHAR(255) NOT NULL,
@@ -20,7 +16,6 @@ CREATE TABLE "usuario" (
     "updatedAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Table: prova
 CREATE TABLE "prova" (
     cod_prova SERIAL PRIMARY KEY,
     nome_prova VARCHAR(50) NOT NULL,
@@ -31,7 +26,6 @@ CREATE TABLE "prova" (
     "updatedAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Table: questao
 CREATE TABLE "questao" (
     cod_questao SERIAL PRIMARY KEY,
     enunciado VARCHAR(1000) NOT NULL,
@@ -42,7 +36,6 @@ CREATE TABLE "questao" (
     "updatedAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Table: questaoprova (Join Table)
 CREATE TABLE "questaoprova" (
     cod_prova INTEGER NOT NULL REFERENCES "prova" (cod_prova) ON DELETE CASCADE,
     cod_questao INTEGER NOT NULL REFERENCES "questao" (cod_questao) ON DELETE CASCADE,
@@ -51,7 +44,6 @@ CREATE TABLE "questaoprova" (
     "updatedAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Table: cabecalho
 CREATE TABLE "cabecalho" (
     cod_cabecalho SERIAL PRIMARY KEY,
     data TIMESTAMP NOT NULL,
@@ -61,7 +53,6 @@ CREATE TABLE "cabecalho" (
     "updatedAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Indexes para melhor performance
 CREATE INDEX idx_prova_assunto ON "prova" (cod_assunto);
 CREATE INDEX idx_prova_usuario ON "prova" (cod_usuario);
 CREATE INDEX idx_questao_usuario ON "questao" (cod_usuario);

@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const Questao = require('../models/Questao');
 
-// Rota para exibir questão
 router.get('/readquest/:cod_questao', async (req, res) =>{
     try {
         const cod_questao = req.params.cod_questao;
@@ -18,7 +17,6 @@ router.get('/readquest/:cod_questao', async (req, res) =>{
     }
 });
 
-// Rota para listar as questões
 router.get('/listquest', function(req, res) {
     Questao.findAll().then(function(questoes) {
         const questoesData = questoes.map(questao => questao.get({ plain: true }));
@@ -29,7 +27,6 @@ router.get('/listquest', function(req, res) {
     });
 });
 
-// Rota para deletar questão
 router.get('/delquest/:cod_questao', function(req, res) {
     Questao.destroy({ where: {'cod_questao': req.params.cod_questao} })
     .then(function() {
@@ -41,12 +38,27 @@ router.get('/delquest/:cod_questao', function(req, res) {
     });
 });
 
-// Rota para criar questão
 router.get('/createquest', function(req, res) {
-    res.render('Quest/addquest');
+    // carregar assuntos, usuários e questões para o formulário de criação
+    Promise.all([
+        Questao.findAll(),
+        require('../models/Assunto').findAll(),
+        require('../models/Usuario').findAll({ attributes: ['cod_usuario', 'nome'] })
+    ]).then(([questoes, assuntos, usuarios]) => {
+        const questoesData = questoes.map(q => q.get({ plain: true }));
+        const assuntosData = assuntos.map(a => a.get({ plain: true }));
+        const usuariosData = usuarios.map(u => u.get({ plain: true }));
+        res.render('Quest/addquest', { 
+            questoes: questoesData, 
+            assuntos: assuntosData, 
+            usuarios: usuariosData 
+        });
+    }).catch(err => {
+        console.error('Erro ao carregar dados para createquest:', err);
+        res.render('Quest/addquest', { questoes: [], assuntos: [], usuarios: [] });
+    });
 });
 
-// Rota para adicionar questão 
 router.post('/addquest', function(req, res) {
     var erros = [];
 
@@ -83,7 +95,6 @@ router.get('/updatequest/:cod_questao', function(req, res) {
     });
 });
 
-// Rota para atualizar questão
 router.post('/updatequest/:cod_questao', async (req, res) => {
     const { enunciado, resposta, cod_usuario, cod_assunto } = req.body;
     const { cod_questao } = req.params;

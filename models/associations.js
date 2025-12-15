@@ -1,4 +1,3 @@
-// Arquivo para definir as associações entre os models
 const Assunto = require('./Assunto');
 const Usuario = require('./Usuario');
 const Prova = require('./Prova');
@@ -7,7 +6,6 @@ const QuestaoProva = require('./QuestãoProva');
 const cabecalho = require('./cabecalho');
 
 function defineAssociations() {
-    // Prova -> Assunto
     Prova.belongsTo(Assunto, {
         foreignKey: 'cod_assunto',
         as: 'assunto'
@@ -17,7 +15,6 @@ function defineAssociations() {
         as: 'provas'
     });
 
-    // Prova -> Usuario
     Prova.belongsTo(Usuario, {
         foreignKey: 'cod_usuario',
         as: 'usuario'
@@ -27,7 +24,6 @@ function defineAssociations() {
         as: 'provas'
     });
 
-    // Questao -> Assunto
     Questao.belongsTo(Assunto, {
         foreignKey: 'cod_assunto',
         as: 'assunto'
@@ -37,7 +33,6 @@ function defineAssociations() {
         as: 'questoes'
     });
 
-    // Questao -> Usuario
     Questao.belongsTo(Usuario, {
         foreignKey: 'cod_usuario',
         as: 'usuario'
@@ -47,7 +42,6 @@ function defineAssociations() {
         as: 'questoes'
     });
 
-    // QuestaoProva -> Prova
     QuestaoProva.belongsTo(Prova, {
         foreignKey: 'cod_prova',
         as: 'prova'
@@ -57,7 +51,6 @@ function defineAssociations() {
         as: 'questoes'
     });
 
-    // QuestaoProva -> Questao
     QuestaoProva.belongsTo(Questao, {
         foreignKey: 'cod_questao',
         as: 'questao'
@@ -67,7 +60,6 @@ function defineAssociations() {
         as: 'provas'
     });
 
-    // Prova -> Questao (Many-to-Many através de QuestaoProva)
     Prova.belongsToMany(Questao, {
         through: QuestaoProva,
         foreignKey: 'cod_prova',
@@ -81,7 +73,6 @@ function defineAssociations() {
         as: 'provas_questao'
     });
 
-    // cabecalho -> Prova
     cabecalho.belongsTo(Prova, {
         foreignKey: 'cod_prova',
         as: 'prova'

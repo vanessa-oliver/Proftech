@@ -1,57 +1,71 @@
-<div class="container-fluid mt-5 mb-5" style="padding: 0 40px;">
-    <div class="row">
-        <div class="col-12">
-            <div class="prova-card">
-                <div class="prova-header">
-                    <h1 class="prova-title">📄 {{prova.nome_prova}}</h1>
-                    <p class="prova-date">📅 Data: {{prova.data}}</p>
-                </div>
+<div class="prova-container">
+    <div class="prova-wrapper">
+        <div class="prova-card">
+            <div class="prova-header">
+                <h1 class="prova-title">📄 {{prova.nome_prova}}</h1>
+                <p class="prova-date">📅 Data: {{prova.data}}</p>
+            </div>
 
-                <div class="prova-content">
-                    <h3 class="questoes-title">Questões da Prova</h3>
-                    
-                    {{#if questoes.length}}
-                        <div class="questoes-list">
-                            {{#each questoes}}
-                                <div class="questao-card">
-                                    <div class="questao-number">Questão {{@index}}</div>
-                                    <div class="questao-body">
-                                        <p class="questao-enunciado">{{this.enunciado}}</p>
-                                        <form action="/exam/remover_questao" method="POST" class="remover-form">
-                                            <input type="hidden" name="cod_prova" value="{{../prova.cod_prova}}">
-                                            <input type="hidden" name="cod_questao" value="{{this.cod_questao}}">
-                                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Deseja remover esta questão?')">
-                                                <i class="bi bi-trash"></i> Remover
-                                            </button>
-                                        </form>
-                                    </div>
+            <div class="prova-content">
+                <h3 class="questoes-title">Questões da Prova</h3>
+                
+                {{#if questoes.length}}
+                    <div class="questoes-list">
+                        {{#each questoes}}
+                            <div class="questao-card">
+                                <div class="questao-number">Questão {{@index}}</div>
+                                <div class="questao-body">
+                                    <p class="questao-enunciado">{{this.enunciado}}</p>
+                                    <form action="/exam/remover_questao" method="POST" class="remover-form">
+                                        <input type="hidden" name="cod_prova" value="{{../prova.cod_prova}}">
+                                        <input type="hidden" name="cod_questao" value="{{this.cod_questao}}">
+                                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Deseja remover esta questão?')">
+                                            <i class="bi bi-trash"></i> Remover
+                                        </button>
+                                    </form>
                                 </div>
-                            {{/each}}
-                        </div>
-                    {{else}}
-                        <div class="alert alert-info">
-                            <i class="bi bi-info-circle"></i> Nenhuma questão adicionada a esta prova.
-                        </div>
-                    {{/if}}
-                </div>
+                            </div>
+                        {{/each}}
+                    </div>
+                {{else}}
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i> Nenhuma questão adicionada a esta prova.
+                    </div>
+                {{/if}}
+            </div>
 
-                <div class="prova-actions">
-                    <a href="/exam/adicionar_questao/{{prova.cod_prova}}" class="btn btn-primary btn-lg">
-                        <i class="bi bi-plus-circle"></i> Adicionar Questão
-                    </a>
-                    <a href="/exam/downloadprova/{{prova.cod_prova}}" class="btn btn-success btn-lg">
-                        <i class="bi bi-file-pdf"></i> Gerar PDF
-                    </a>
-                    <a href="/exam/listprova" class="btn btn-secondary btn-lg">
-                        <i class="bi bi-arrow-left"></i> Voltar
-                    </a>
-                </div>
+            <div class="prova-actions">
+                <a href="/exam/adicionar_questao/{{prova.cod_prova}}" class="btn btn-primary btn-lg">
+                    <i class="bi bi-plus-circle"></i> Adicionar Questão
+                </a>
+                <a href="/exam/downloadprova/{{prova.cod_prova}}" class="btn btn-success btn-lg">
+                    <i class="bi bi-file-pdf"></i> Gerar PDF
+                </a>
+                <a href="/exam/listprova" class="btn btn-secondary btn-lg">
+                    <i class="bi bi-arrow-left"></i> Voltar
+                </a>
             </div>
         </div>
     </div>
 </div>
 
 <style>
+.prova-container {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+    background-color: #f9fafb;
+}
+
+.prova-wrapper {
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
 .prova-card {
     background: white;
     border-radius: 12px;
@@ -148,6 +162,10 @@
 }
 
 @media (max-width: 768px) {
+    .prova-container {
+        padding: 1rem 0.5rem;
+    }
+
     .prova-card {
         padding: 20px;
     }

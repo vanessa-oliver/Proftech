@@ -1,6 +1,5 @@
 const { Sequelize, DataTypes } = require('sequelize');
 const sq = require('../config/database.js');
-// const Disciplina = require('./Disciplina');
 
 const Assunto = sq.sequelize.define('Assunto', {
     cod_assunto: {
@@ -8,14 +7,6 @@ const Assunto = sq.sequelize.define('Assunto', {
         autoIncrement: true,
         primaryKey: true
     },
-    // cod_disc: {
-    //     type: DataTypes.INTEGER,
-    //     allowNull: false,
-    //     references: {
-    //         model: Disciplina,
-    //         key: 'cod_disc'
-    //     }
-    // },
     nome_assunto: {
         type: DataTypes.STRING(150),
         allowNull: false
@@ -25,5 +16,4 @@ const Assunto = sq.sequelize.define('Assunto', {
     tableName: 'assunto',
     timestamps: false 
 });
-// model: Disciplina;
 module.exports = Assunto;

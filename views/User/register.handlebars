@@ -32,6 +32,10 @@
                     <input type="password" class="form-control" id="password2" name="password2" placeholder="Repita a senha" required>
                 </div>
 
+                {{#if redirect}}
+                    <input type="hidden" name="redirect" value="{{redirect}}">
+                {{/if}}
+
                 <button type="submit" class="btn btn-primary btn-block mt-3">
                     <i class="bi bi-person-plus"></i> Cadastrar
                 </button>

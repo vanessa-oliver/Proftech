@@ -1,7 +1,209 @@
-<h1>Adicione seu assunto</h1>
-<form action="/subject/addassunto" method="post">
-    <label>nome do assunto</label>
-    <input type="text" id="nome_assunto" name="nome_assunto" placeholder="nome_assunto">
-    <br>
-    <button type="submit">Criar</button>
-</form>
+<div class="create-assunto-container">
+    <div class="create-assunto-wrapper">
+        <div class="form-card">
+            <h2 class="section-title mb-4">
+                <i class="bi bi-plus-circle"></i> Criar Novo Assunto
+            </h2>
+
+            {{#if erros}}
+                {{#each erros}}
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="bi bi-exclamation-circle"></i> {{texto}}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {{/each}}
+            {{/if}}
+
+            <form action="/subject/addassunto" method="post" id="formAssunto">
+                <div class="form-section mb-4">
+                    <div class="form-group mb-3">
+                        <label for="nome_assunto" class="form-label">
+                            <i class="bi bi-book"></i> Nome do Assunto *
+                        </label>
+                        <input type="text" 
+                            class="form-control form-control-lg" 
+                            id="nome_assunto" 
+                            name="nome_assunto" 
+                            placeholder="Ex: Álgebra, Geometria, História..." 
+                            required>
+                        <small class="form-text text-muted">Digite um nome descritivo para o assunto</small>
+                    </div>
+                </div>
+
+                {{#if redirect}}
+                    <input type="hidden" name="redirect" value="{{redirect}}">
+                {{/if}}
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-success btn-lg">
+                        <i class="bi bi-check-circle"></i> Criar Assunto
+                    </button>
+                    <a href="{{#if redirect}}{{redirect}}{{else}}/subject/listassunto{{/if}}" class="btn btn-secondary btn-lg">
+                        <i class="bi bi-x-circle"></i> Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+.create-assunto-container {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+    background-color: #f9fafb;
+}
+
+.create-assunto-wrapper {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.form-card {
+    background: white;
+    border-radius: 12px;
+    padding: 40px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.section-title {
+    color: #667eea;
+    font-weight: 700;
+    border-bottom: 3px solid #667eea;
+    padding-bottom: 15px;
+    margin-bottom: 25px;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.form-section {
+    background-color: #f9fafb;
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.form-label {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.form-control-lg {
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.form-control-lg:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+.form-text {
+    display: block;
+    margin-top: 5px;
+    font-size: 0.875rem;
+}
+
+.form-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.form-actions button,
+.form-actions a {
+    padding: 12px 20px;
+    font-size: 1.05rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.btn-success {
+    background-color: #10b981;
+    border-color: #10b981;
+}
+
+.btn-success:hover {
+    background-color: #059669;
+    border-color: #059669;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+}
+
+.btn-secondary {
+    background-color: #6b7280;
+    border-color: #6b7280;
+}
+
+.btn-secondary:hover {
+    background-color: #4b5563;
+    border-color: #4b5563;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(107, 114, 128, 0.4);
+}
+
+.alert {
+    border-radius: 8px;
+    border: none;
+    margin-bottom: 20px;
+}
+
+.alert-danger {
+    background-color: #fee2e2;
+    color: #991b1b;
+}
+
+.alert-danger .bi {
+    margin-right: 8px;
+}
+
+@media (max-width: 768px) {
+    .create-assunto-container {
+        padding: 1rem 0.5rem;
+    }
+
+    .form-card {
+        padding: 25px;
+    }
+
+    .section-title {
+        font-size: 1.3rem;
+    }
+
+    .form-actions {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('formAssunto');
+    
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            const nomeAssunto = document.getElementById('nome_assunto').value.trim();
+
+            if (!nomeAssunto) {
+                e.preventDefault();
+                alert('Por favor, preencha o nome do assunto!');
+                return false;
+            }
+        });
+    }
+});
+</script>

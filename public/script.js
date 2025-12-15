@@ -7,13 +7,13 @@ let comando, enunciado, resposta;
 
 const sendMessage = async () => {
     comando = messageInput.value;
-    messageInput.value = ''; // Limpa o campo de input
+    messageInput.value = '';
 
     if (comando.trim() !== '') {
-        // Exibe a mensagem do usuário na tela
         messagesContainer.innerHTML += `<div class="user-message">usuario:<br>${comando}</div><br>`;
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        
         try {
-            // Primeira requisição: envia o comando do usuário para a IA
             const response = await fetch('/IA/chat', {
                 method: 'POST',
                 headers: {
@@ -27,35 +27,36 @@ const sendMessage = async () => {
             }
             const data = await response.json();
 
-            // Exibe o enunciado gerado pela IA
             enunciado = data.enunciado;
             messagesContainer.innerHTML += `<div class="bot-message">chat:<br>${enunciado}</div><br>`;
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
-            // Exibe a resposta gerada com base no enunciado
             resposta = data.resposta;
             messagesContainer.innerHTML += `<div class="bot-message">resposta:<br>${resposta}</div>`;
-
-            // Salva a conversa (enunciado e resposta gerada) no banco, se necessário
-            // Aqui você pode chamar outra função para salvar a conversa se desejar
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
         } catch (error) {
             console.error("Erro ao enviar mensagem:", error);
+            messagesContainer.innerHTML += `<div class="bot-message" style="color: red;">Erro ao processar a mensagem. Tente novamente.</div>`;
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
         }
     } else {
         console.warn('Mensagem vazia, não enviada.');
     }
 };
 
-// Event listener para o botão de enviar mensagem
 sendButton.addEventListener('click', sendMessage);
 
+messageInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+        sendMessage();
+    }
+});
 
-// Função para salvar a conversa no banco de dados
 const saveConversation = async () => {
     if (enunciado && resposta) {
         console.log(`Salvando conversa: ${enunciado} -> ${resposta}`);
         try {
-            // Envia uma requisição POST para o servidor com enunciado e resposta
             const response = await fetch('/IA/save-conversation', {
                 method: 'POST',
                 headers: {
@@ -64,7 +65,6 @@ const saveConversation = async () => {
                 body: JSON.stringify({ enunciado, resposta })
             });
 
-            // Verifica se a resposta da requisição foi bem-sucedida
             if (response.ok) {
                 console.log("Conversa salva com sucesso.");
                 alert("Conversa salva com sucesso!");
@@ -81,5 +81,4 @@ const saveConversation = async () => {
     }
 };
 
-// Event listener para o botão de salvar conversa
 saveButton.addEventListener('click', saveConversation);

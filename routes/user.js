@@ -1,16 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const Usuario = require('../models/Usuario');
-const bcryptjs = require('bcryptjs');
-const passport = require('passport');
 
-// Rota para a página de cadastro
 router.get('/cadastro', function(req, res) {
-    res.render('User/register');
+    const redirect = req.query.redirect || '/user/login';
+    res.render('User/register', { redirect });
 });
 
-// Rota para a página de cadastro
 router.post('/cadastro', function(req, res) {
+    const redirect = req.body.redirect || '/user/login';
     var erros = [];
 
     if(req.body.nome == undefined || req.body.nome == null || req.body.nome == "") {
@@ -22,22 +20,19 @@ router.post('/cadastro', function(req, res) {
     if(req.body.password == undefined || req.body.password == null || req.body.password == "") {
         erros.push({texto: "Senha inválida."});
     }
-    if(req.body.password.length < 6) {
-        erros.push({texto: "Senha muito curta."});
-    }
 
     if(req.body.password != req.body.password2) {
         erros.push({texto: "As senhas não são iguais, tente novamente."});
     }
 
     if(erros.length > 0) {
-        res.render('User/register', {erros: erros});
+        res.render('User/register', {erros: erros, redirect});
 
     } else {
         Usuario.findOne({ where: {email: req.body.email} }).then(function(usuario) {
             if(usuario) {
                 req.flash("error_msg", "Já existe uma conta com este email.");
-                res.redirect('/user/cadastro');
+                res.redirect('/user/cadastro?redirect=' + encodeURIComponent(redirect));
             } else {
                 const novoUsuario = {
                     nome: req.body.nome,
@@ -46,62 +41,50 @@ router.post('/cadastro', function(req, res) {
                     password: req.body.password
                 };
 
-                bcryptjs.genSalt(10, function(erro, salt) {
-                    bcryptjs.hash(novoUsuario.password, salt, function(erro, hash) {
-                        if(erro) {
-                            req.flash("error_msg", "Erro ao salvar usuário.");
-                            res.redirect('/user/cadastro');
-                        }
-
-                        novoUsuario.password = hash;
-                        console.log(novoUsuario);
-                        Usuario.create(novoUsuario).then(function() {
-                            req.flash("success_msg", "Usuário criado com sucesso.");
-                            res.redirect('/user/login');
-                        }).catch(function(erro) {
-                            req.flash("error_msg", "Erro ao criar usuário.");
-                            res.redirect('/user/cadastro');
-                        });
-                    });
+                Usuario.create(novoUsuario).then(function() {
+                    req.flash("success_msg", "Usuário criado com sucesso.");
+                    res.redirect(redirect);
+                }).catch(function(erro) {
+                    req.flash("error_msg", "Erro ao criar usuário.");
+                    res.redirect('/user/cadastro?redirect=' + encodeURIComponent(redirect));
                 });
             }
         }).catch(function(erro) {
             req.flash("error_msg", "Erro interno.");
-            res.redirect('/user/cadastro');
+            res.redirect('/user/cadastro?redirect=' + encodeURIComponent(redirect));
         });
     }
 });
 
-// Rota para a página de login
-router.get('/login', function(req, res, ) {
-    res.render('User/login');
+// API: retornar lista de usuários (id + nome) em JSON
+router.get('/api/usuarios', async (req, res) => {
+    try {
+        const usuarios = await Usuario.findAll({ attributes: ['cod_usuario', 'nome'] });
+        res.json(usuarios.map(u => u.get({ plain: true })));
+    } catch (error) {
+        console.error('Erro ao buscar usuarios (API):', error);
+        res.status(500).json({ error: 'Erro ao buscar usuarios' });
+    }
 });
 
-router.post('/login', passport.authenticate('local', {
-    successRedirect: '/', 
-    failureRedirect: '/user/login', 
-    failureFlash: true
-}));
+// API: criar usuário simples via JSON
+router.post('/api/usuarios', async (req, res) => {
+    try {
+        const { nome, email, password } = req.body;
+        if (!nome || !email || !password) {
+            return res.status(400).json({ error: 'nome, email e password são obrigatórios' });
+        }
+        const existing = await Usuario.findOne({ where: { email } });
+        if (existing) return res.status(409).json({ error: 'Email já cadastrado' });
 
-// Rota para logout
-router.get('/logout', (req, res) => {
-    req.logout((err) => {
-        if(err) return next(err);
-        res.redirect('/');
-    });
+        const novo = await Usuario.create({ nome, email, password, eAdmin: false });
+        res.status(201).json({ cod_usuario: novo.cod_usuario, nome: novo.nome });
+    } catch (error) {
+        console.error('Erro ao criar usuario (API):', error);
+        res.status(500).json({ error: 'Erro ao criar usuario' });
+    }
 });
 
-// Rota para a página inicial
-// router.get('/listuser', function(req, res) {
-//     Usuario.findAll().then(function(usuarios) {
-//         res.render('User/user', { usuarios: usuarios });
-//     }).catch(function(error) {
-//         console.error(error);
-//         res.status(500).send("Ocorreu um erro ao buscar os usuários.");
-//     });
-// });
-
-// Rota para deletar um usuário
 router.get('/del/:cod_usuario', (req, res) =>{
     Usuario.destroy({ where: {'cod_usuario': req.params.cod_usuario} })
     .then(function() {
@@ -128,7 +111,6 @@ router.get('/updateuser/:cod_usuario', async(req, res)=> {
 });
 
 router.post('/updateuser/:cod_usuario', async (req, res) => {
-    console.log('entrou no atualizar')
     const { nome, email, password } = req.body;
     const { cod_usuario } = req.params;
     

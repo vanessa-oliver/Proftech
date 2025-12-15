@@ -42,6 +42,18 @@
                                 </div>
                             </div>
                         </div>
+
+                        <div class="form-group mb-3">
+                            <label for="cod_usuario" class="form-label">
+                                <i class="bi bi-person"></i> Professor/Criador *
+                            </label>
+                            <select class="form-select form-select-lg" id="cod_usuario" name="cod_usuario" required>
+                                <option value="">Selecione um professor</option>
+                                {{#each usuarios}}
+                                    <option value="{{cod_usuario}}">{{nome}}</option>
+                                {{/each}}
+                            </select>
+                        </div>
                     </div>
 
                     <!-- Seleção de Questões -->
@@ -50,11 +62,26 @@
                             ❓ Selecionar Questões
                             <span class="contador-questoes">(0 selecionadas)</span>
                         </h5>
+
+                        <!-- Filtro por Assunto -->
+                        <div class="form-group mb-4">
+                            <label for="filtroAssunto" class="form-label">
+                                <i class="bi bi-funnel"></i> Filtrar por Assunto
+                            </label>
+                            <select class="form-select form-select-lg" id="filtroAssunto">
+                                <option value="">Mostrar todas as questões</option>
+                                {{#if assuntos}}
+                                    {{#each assuntos}}
+                                        <option value="{{cod_assunto}}">{{nome_assunto}}</option>
+                                    {{/each}}
+                                {{/if}}
+                            </select>
+                        </div>
                         
                         {{#if questoes.length}}
                             <div class="questoes-container">
                                 {{#each questoes}}
-                                    <div class="questao-item">
+                                    <div class="questao-item" data-cod-assunto="{{cod_assunto}}">
                                         <div class="form-check">
                                             <input class="form-check-input checkbox-questao" type="checkbox" 
                                                 id="quest_{{cod_questao}}" name="questoes_selecionadas" 
@@ -89,6 +116,61 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('formProva');
+    const filtroAssuntoSelect = document.getElementById('filtroAssunto');
+    const questoesItems = document.querySelectorAll('.questao-item');
+    const checkboxes = document.querySelectorAll('.checkbox-questao');
+    const contadorElement = document.querySelector('.contador-questoes');
+    
+    // Função para filtrar questões por assunto
+    if (filtroAssuntoSelect) {
+        filtroAssuntoSelect.addEventListener('change', function() {
+            const assuntoSelecionado = this.value;
+            
+            questoesItems.forEach(item => {
+                if (assuntoSelecionado === '') {
+                    // Mostrar todas
+                    item.style.display = 'block';
+                } else {
+                    // Mostrar apenas as do assunto selecionado
+                    if (item.getAttribute('data-cod-assunto') === assuntoSelecionado) {
+                        item.style.display = 'block';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                }
+            });
+        });
+    }
+
+    // Atualizar contador quando checkbox é marcado/desmarcado
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            const contagem = document.querySelectorAll('.checkbox-questao:checked').length;
+            contadorElement.textContent = `(${contagem} selecionadas)`;
+        });
+    });
+
+    // Validar que todos os campos obrigatórios são preenchidos
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            const nomProva = document.getElementById('nome_prova').value.trim();
+            const data = document.getElementById('data').value.trim();
+            const codAssunto = document.getElementById('cod_assunto').value.trim();
+            const codUsuario = document.getElementById('cod_usuario').value.trim();
+
+            if (!nomProva || !data || !codAssunto || !codUsuario) {
+                e.preventDefault();
+                alert('Por favor, preencha todos os campos obrigatórios!');
+                return false;
+            }
+        });
+    }
+});
+</script>
 
 <style>
 .create-prova-container {
@@ -215,3 +297,32 @@
     }
 }
 </style>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const checkboxes = document.querySelectorAll('.checkbox-questao');
+    const contadorElement = document.querySelector('.contador-questoes');
+    const form = document.getElementById('formProva');
+
+    // Atualizar contador quando checkbox é marcado/desmarcado
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            const contagem = document.querySelectorAll('.checkbox-questao:checked').length;
+            contadorElement.textContent = `(${contagem} selecionadas)`;
+        });
+    });
+
+    // Validar que pelo menos um campo obrigatório é preenchido
+    form.addEventListener('submit', function(e) {
+        const nomProva = document.getElementById('nome_prova').value.trim();
+        const data = document.getElementById('data').value.trim();
+        const codAssunto = document.getElementById('cod_assunto').value.trim();
+        const codUsuario = document.getElementById('cod_usuario').value.trim();
+
+        if (!nomProva || !data || !codAssunto || !codUsuario) {
+            e.preventDefault();
+            alert('Por favor, preencha todos os campos obrigatórios!');
+            return false;
+        }
+    });
+});
+</script>

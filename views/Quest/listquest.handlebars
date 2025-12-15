@@ -1,63 +1,92 @@
-<div class="container-fluid mt-5 mb-5" style="padding: 0 40px;">
-  <div class="row mb-4">
-    <div class="col-12 text-center">
-      <h1 class="mb-4">❓ Questões</h1>
-      <div class="btn-group" role="group">
-        <a href="/quest/createquest" class="btn btn-primary btn-lg">
-          <i class="bi bi-plus-circle"></i> Criar Questão Manual
-        </a>
-        <a href="/IA/chat" class="btn btn-success btn-lg">
-          <i class="bi bi-robot"></i> Criar com IA
-        </a>
-      </div>
+<div class="list-quest-container">
+  <div class="list-quest-header text-center mb-5">
+    <h1 class="page-title">❓ Questões</h1>
+    <div class="action-buttons mt-4">
+      <a href="/quest/createquest" class="btn btn-primary btn-lg">
+        <i class="bi bi-plus-circle"></i> Criar Questão Manual
+      </a>
+      <a href="/IA/chat" class="btn btn-success btn-lg">
+        <i class="bi bi-robot"></i> Criar com IA
+      </a>
     </div>
   </div>
 
   {{#if questoes.length}}
-    <div class="row">
-      {{#each questoes}}
-        <div class="col-md-6 col-lg-4 mb-4">
-          <div class="card h-100 shadow-sm quest-card">
-            <div class="card-body">
-              <h5 class="card-title quest-number">Questão #{{cod_questao}}</h5>
-              <p class="card-text quest-enunciado">{{enunciado}}</p>
-              
-              <div class="d-grid gap-2 mt-3">
-                <a href="/quest/readquest/{{cod_questao}}" class="btn btn-info btn-sm">
-                  <i class="bi bi-eye"></i> Visualizar
-                </a>
-                <a href="/quest/updatequest/{{cod_questao}}" class="btn btn-warning btn-sm">
-                  <i class="bi bi-pencil"></i> Editar
-                </a>
-                <form action="/quest/delquest/{{cod_questao}}" method="GET" style="margin: 0;">
-                  <button type="submit" class="btn btn-danger btn-sm w-100" onclick="return confirm('Tem certeza que deseja deletar?')">
-                    <i class="bi bi-trash"></i> Deletar
-                  </button>
-                </form>
+    <div class="questoes-container">
+      <div class="row">
+        {{#each questoes}}
+          <div class="col-3 mb-4">
+            <div class="card h-100 shadow-sm quest-card">
+              <div class="card-body">
+                <h5 class="card-title quest-number">Questão #{{cod_questao}}</h5>
+                <p class="card-text quest-enunciado">{{enunciado}}</p>
+                
+                <div class="d-grid gap-2 mt-3">
+                  <a href="/quest/readquest/{{cod_questao}}" class="btn btn-info btn-sm">
+                    <i class="bi bi-eye"></i> Visualizar
+                  </a>
+                  <a href="/quest/updatequest/{{cod_questao}}" class="btn btn-warning btn-sm">
+                    <i class="bi bi-pencil"></i> Editar
+                  </a>
+                  <form action="/quest/delquest/{{cod_questao}}" method="GET" style="margin: 0;">
+                    <button type="submit" class="btn btn-danger btn-sm w-100" onclick="return confirm('Tem certeza que deseja deletar?')">
+                      <i class="bi bi-trash"></i> Deletar
+                    </button>
+                  </form>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      {{/each}}
+        {{/each}}
+      </div>
     </div>
   {{else}}
-    <div class="row">
-      <div class="col-12">
-        <div class="alert alert-info alert-lg" role="alert">
-          <i class="bi bi-info-circle"></i> <strong>Nenhuma questão criada ainda!</strong>
-          <a href="/quest/createquest" class="alert-link">Crie uma questão</a> ou 
-          <a href="/IA/chat" class="alert-link">use IA</a>
-        </div>
+    <div class="empty-state">
+      <div class="alert alert-info alert-lg" role="alert">
+        <i class="bi bi-info-circle"></i> <strong>Nenhuma questão criada ainda!</strong>
+        <a href="/quest/createquest" class="alert-link">Crie uma questão</a> ou 
+        <a href="/IA/chat" class="alert-link">use IA</a>
       </div>
     </div>
   {{/if}}
 </div>
 
 <style>
-  .btn-group {
+  .list-quest-container {
+    width: 100%;
+    padding: 2rem 1rem;
+    background-color: #f9fafb;
+  }
+
+  .list-quest-header {
+    max-width: 1200px;
+    margin: 0 auto 2rem;
+  }
+
+  .page-title {
+    color: #333;
+    font-weight: 700;
+    font-size: 3rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .action-buttons {
     display: flex;
-    gap: 10px;
+    gap: 15px;
+    justify-content: center;
     flex-wrap: wrap;
+  }
+
+  .action-buttons .btn {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 500;
+  }
+
+  .questoes-container {
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 0 1rem;
   }
 
   .quest-card {
@@ -99,17 +128,30 @@
     font-size: 1.1rem;
   }
 
+  .empty-state {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
   h1 {
     color: #333;
     font-weight: 600;
   }
 
   @media (max-width: 768px) {
-    .btn-group {
+    .list-quest-container {
+      padding: 1rem 0.5rem;
+    }
+
+    .page-title {
+      font-size: 1.5rem;
+    }
+
+    .action-buttons {
       flex-direction: column;
     }
 
-    .btn-group .btn {
+    .action-buttons .btn {
       width: 100%;
     }
 

@@ -3,7 +3,6 @@ const router = express.Router();
 const Assunto = require('../models/Assunto');
 const Prova = require('../models/Prova');
 
-// Rota para listar assuntos
 router.get('/listassunto', function(req, res) {
     Assunto.findAll().then(function(assuntos) {
         const assuntosData = assuntos.map(assunto => assunto.get({ plain: true }));
@@ -14,29 +13,55 @@ router.get('/listassunto', function(req, res) {
     });
 });
 
-// Rota para criar assunto
 router.get('/createassunto', function(req, res) {
-    res.render('Subject/addassunto');
+    const redirect = req.query.redirect || '/subject/listassunto';
+    res.render('Subject/addassunto', { redirect });
 });
 
-// Rota para adicionar assunto 
 router.post('/addassunto', function(req, res) {
+    const redirect = req.body.redirect || '/subject/listassunto';
+    
     if(!req.body.nome_assunto) {
-        return res.render('Subject/addassunto', {erros: [{texto: "Nome do assunto é obrigatório!"}]});
+        return res.render('Subject/addassunto', {erros: [{texto: "Nome do assunto é obrigatório!"}], redirect});
     }
 
     Assunto.create({
         nome_assunto: req.body.nome_assunto,
     }).then(function() {
         req.flash("success_msg", "Assunto criado com sucesso!");
-        res.redirect('/subject/listassunto');
+        res.redirect(redirect);
     }).catch(function(erro) {
         req.flash("error_msg", "Erro ao cadastrar assunto: " + erro);
-        res.redirect('/subject/createassunto');
+        res.redirect('/subject/createassunto?redirect=' + encodeURIComponent(redirect));
     });
 });
 
-// Rota para deletar assunto
+// API: retornar lista de assuntos em JSON
+router.get('/api/assuntos', async (req, res) => {
+    try {
+        const assuntos = await Assunto.findAll();
+        res.json(assuntos.map(a => a.get({ plain: true })));
+    } catch (error) {
+        console.error('Erro ao buscar assuntos (API):', error);
+        res.status(500).json({ error: 'Erro ao buscar assuntos' });
+    }
+});
+
+// API: criar assunto via JSON (usado por formulário dinâmico)
+router.post('/api/assuntos', async (req, res) => {
+    try {
+        const { nome_assunto } = req.body;
+        if (!nome_assunto || nome_assunto.trim() === '') {
+            return res.status(400).json({ error: 'nome_assunto é obrigatório' });
+        }
+        const novo = await Assunto.create({ nome_assunto });
+        res.status(201).json(novo.get({ plain: true }));
+    } catch (error) {
+        console.error('Erro ao criar assunto (API):', error);
+        res.status(500).json({ error: 'Erro ao criar assunto' });
+    }
+});
+
 router.post('/del_assunto/:cod_assunto', function(req, res) {
     const { cod_assunto } = req.params;
     
@@ -56,7 +81,6 @@ router.post('/del_assunto/:cod_assunto', function(req, res) {
     });
 });
 
-// Rota para exibir página de atualizar assunto
 router.get('/updateassunto/:cod_assunto', async(req, res)=> {
     try{
         const cod_assunto = req.params.cod_assunto;
@@ -71,7 +95,6 @@ router.get('/updateassunto/:cod_assunto', async(req, res)=> {
     }    
 });
 
-// Rota para atualizar assunto
 router.post('/atualizarassunto/:cod_assunto', async (req, res) => {
     const {nome_assunto} = req.body;
     const {cod_assunto} = req.params;

@@ -1,25 +1,212 @@
-{{#each erros}}
-    <div class="alert alert-danger" role="alert">
-        {{texto}}
-    </div>
-{{/each}}
-<h1>crie sua questão</h1>
-<div class="card">
-    <div class="card-body">
-        <form action="/quest/addquest" method="post">
-            <label>enunciado</label>
-            <input type="text" id="enunciado" name="enunciado" placeholder="enunciado">
-            <br>
-            <label>resposta</label>
-            <input type="text" id="resposta" name="resposta" placeholder="resposta">
-            <br>
-            <label>codigo do usuario</label>    
-            <input type="text" id="cod_usuario" name="cod_usuario" placeholder="codigo do usuario">
-            <br>
-            <label>codigo do assunto</label>
-            <input type="text" id="cod_assunto" name="cod_assunto" placeholder="codigo do assunto">
-            <br>
-            <button type="submit">Criar</button>
-        </form>
+<div class="create-quest-container">
+    <div class="create-quest-wrapper">
+        <div class="form-card">
+            <h2 class="section-title mb-4">
+                <i class="bi bi-plus-circle"></i> Criar Nova Questão
+            </h2>
+
+            {{#if erros}}
+                {{#each erros}}
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="bi bi-exclamation-circle"></i> {{texto}}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {{/each}}
+            {{/if}}
+
+            <form action="/quest/addquest" method="post" id="formQuestao">
+                <div class="form-section mb-4">
+                    <h5 class="form-section-title">📝 Informações da Questão</h5>
+                    
+                    <div class="form-group mb-3">
+                        <label for="enunciado" class="form-label">
+                            <i class="bi bi-chat-square-text"></i> Enunciado *
+                        </label>
+                        <textarea class="form-control form-control-lg" id="enunciado" name="enunciado" 
+                            placeholder="Digite o enunciado da questão..." rows="4" required></textarea>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="resposta" class="form-label">
+                            <i class="bi bi-check-circle"></i> Resposta *
+                        </label>
+                        <textarea class="form-control form-control-lg" id="resposta" name="resposta" 
+                            placeholder="Digite a resposta esperada..." rows="3" required></textarea>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label for="cod_usuario" class="form-label">
+                                    <i class="bi bi-person"></i> Professor (Usuário) *
+                                </label>
+                                <div class="d-flex gap-2">
+                                    <select class="form-select form-select-lg" id="cod_usuario" name="cod_usuario" required>
+                                        <option value="">Selecione um professor...</option>
+                                        {{#if usuarios}}
+                                            {{#each usuarios}}
+                                                <option value="{{cod_usuario}}">{{nome}}</option>
+                                            {{/each}}
+                                        {{/if}}
+                                    </select>
+                                    <a href="/user/cadastro?redirect=/quest/createquest" class="btn btn-outline-primary" title="Criar novo professor">
+                                        <i class="bi bi-plus-lg"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label for="cod_assunto" class="form-label">
+                                    <i class="bi bi-book"></i> Assunto *
+                                </label>
+                                <div class="d-flex gap-2">
+                                    <select class="form-select form-select-lg" id="cod_assunto" name="cod_assunto" required>
+                                        <option value="">Selecione um assunto...</option>
+                                        {{#if assuntos}}
+                                            {{#each assuntos}}
+                                                <option value="{{cod_assunto}}">{{nome_assunto}}</option>
+                                            {{/each}}
+                                        {{/if}}
+                                    </select>
+                                    <a href="/subject/createassunto?redirect=/quest/createquest" class="btn btn-outline-primary" title="Criar novo assunto">
+                                        <i class="bi bi-plus-lg"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-success btn-lg">
+                        <i class="bi bi-check-circle"></i> Criar Questão
+                    </button>
+                    <a href="/quest/listquest" class="btn btn-secondary btn-lg">
+                        <i class="bi bi-x-circle"></i> Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('formQuestao');
+    
+    // Validar que todos os campos obrigatórios são preenchidos
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            const enunciado = document.getElementById('enunciado').value.trim();
+            const resposta = document.getElementById('resposta').value.trim();
+            const codUsuario = document.getElementById('cod_usuario').value.trim();
+            const codAssunto = document.getElementById('cod_assunto').value.trim();
+
+            if (!enunciado || !resposta || !codUsuario || !codAssunto) {
+                e.preventDefault();
+                alert('Por favor, preencha todos os campos obrigatórios!');
+                return false;
+            }
+        });
+    }
+});
+</script>
+
+<style>
+.create-quest-container {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+    background-color: #f9fafb;
+}
+
+.create-quest-wrapper {
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.form-card {
+    background: white;
+    border-radius: 12px;
+    padding: 40px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.section-title {
+    color: #667eea;
+    font-weight: 700;
+    border-bottom: 3px solid #667eea;
+    padding-bottom: 15px;
+    margin-bottom: 25px;
+    font-size: 1.5rem;
+}
+
+.form-section-title {
+    color: #333;
+    font-weight: 600;
+    margin-bottom: 20px;
+    font-size: 1.1rem;
+}
+
+.form-label {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.form-control,
+.form-control-lg {
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus,
+.form-control-lg:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+textarea.form-control {
+    resize: vertical;
+}
+
+.form-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.form-actions button,
+.form-actions a {
+    padding: 12px 20px;
+    font-size: 1.05rem;
+}
+
+@media (max-width: 768px) {
+    .create-quest-container {
+        padding: 1rem 0.5rem;
+    }
+
+    .form-card {
+        padding: 20px;
+    }
+
+    .section-title {
+        font-size: 1.2rem;
+    }
+
+    .form-actions {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
