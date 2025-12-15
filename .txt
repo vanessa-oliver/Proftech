@@ -53,3 +53,5 @@ CREATE TABLE "Cabecalho" (
     cod_prova INTEGER NOT NULL REFERENCES "Prova" (cod_prova),
     CONSTRAINT fk_data_prova FOREIGN KEY (data) REFERENCES "Prova" (data)
 );
+
+Assunto
