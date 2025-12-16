@@ -8,6 +8,9 @@ const questaoprova = require('../models/QuestãoProva');
 const PDFDocument = require('pdfkit');
 const fs = require('fs');
 const path = require('path');
+const generative = require('../services/generative');
+const QuestaoModel = require('../models/Questao');
+const Questaoprova = require('../models/QuestãoProva');
 
 router.get('/listprova', function(req, res) {
     Prova.findAll().then(function(provas) {
@@ -111,6 +114,57 @@ router.get('/createprova', async (req, res) => {
         console.error('Erro ao buscar dados:', error);
         req.flash("error_msg", "Erro ao carregar página de criação");
         res.redirect('/exam/listprova');
+    }
+});
+
+// Página para gerar prova com IA
+router.get('/createprova-ia', async (req, res) => {
+    try {
+        const assuntos = await Assunto.findAll();
+        const usuarios = await Usuario.findAll();
+        res.render('Exam/generate-prova-ia', { assuntos: assuntos.map(a => a.get({ plain: true })), usuarios: usuarios.map(u => u.get({ plain: true })) });
+    } catch (error) {
+        console.error('Erro ao carregar página de geração IA:', error);
+        req.flash('error_msg', 'Erro ao carregar página IA');
+        res.redirect('/exam/createprova');
+    }
+});
+
+// Gera prova via IA, grava questões e prova no banco
+router.post('/generateprova-ia', async (req, res) => {
+    try {
+        const { nome_prova, data, cod_assunto, cod_usuario, quantidade, dificuldade, formato } = req.body;
+
+        if (!nome_prova || !data || !cod_assunto || !cod_usuario) {
+            req.flash('error_msg', 'Preencha todos os campos obrigatórios!');
+            return res.redirect('/exam/createprova-ia');
+        }
+
+        const num = parseInt(quantidade) || 5;
+
+        const assuntoObj = await Assunto.findByPk(cod_assunto);
+        const assuntoNome = assuntoObj ? assuntoObj.nome_assunto : '';
+
+        const questions = await generative.generateExamQuestions({ assunto: assuntoNome || 'assunto genérico', quantidade: num, dificuldade: dificuldade || 'médio', formato: formato || 'discursiva' });
+
+        // cria prova
+        const novaProva = await Prova.create({ nome_prova, data, cod_usuario, cod_assunto });
+
+        // cria questões e associa
+        for (const q of questions) {
+            const enunciado = q.enunciado || q.question || '';
+            const resposta = q.resposta || q.answer || '';
+            const novaQ = await QuestaoModel.create({ enunciado, resposta, cod_usuario, cod_assunto });
+            await Questaoprova.create({ cod_prova: novaProva.cod_prova, cod_questao: novaQ.cod_questao });
+        }
+
+        req.flash('success_msg', 'Prova gerada com sucesso!');
+        res.redirect('/exam/readprova/' + novaProva.cod_prova);
+
+    } catch (error) {
+        console.error('Erro ao gerar prova com IA:', error);
+        req.flash('error_msg', 'Erro ao gerar prova com IA: ' + error.message);
+        res.redirect('/exam/createprova-ia');
     }
 });
 
