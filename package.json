@@ -4,8 +4,8 @@
   "description": "login ",
   "main": "App.js",
   "scripts": {
-    "start": "node app.js",
-    "dev": "nodemon app.js",
+    "start": "node App.js",
+    "dev": "nodemon App.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -26,6 +26,7 @@
     "passport-local": "^1.0.0",
     "pdfkit": "^0.17.2",
     "pg": "^8.13.1",
-    "sequelize": "^6.37.6"
+    "sequelize": "^6.37.6",
+    "sqlite3": "^6.0.1"
   }
 }
